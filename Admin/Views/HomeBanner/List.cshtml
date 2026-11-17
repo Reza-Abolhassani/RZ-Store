@@ -1,0 +1,164 @@
+﻿@model List<Admin.Models.HomeBannerDto>
+
+@section style {
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+
+    <style>
+        .action-btn {
+            width: 70px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 2px;
+        }
+    </style>
+
+    <style>
+        .banner-image {
+            width: 130px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 5px;
+            display: block;
+        }
+    </style>
+}
+
+@section script {
+    <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/fa.json"></script>
+    <script src="/assets/js/pages/datatable-export.js"></script>
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-picture"></i>
+                    فهرست بنرهای صفحه اصلی
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="top-buttons-box mb-2">
+                <a class="btn btn-success" asp-controller="HomeBanner" asp-action="Add">
+                    <i class="icon-plus"></i>
+                    افزودن بنر جدید
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped" id="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>تصویر</th>
+                            <th>عنوان بنر</th>
+                            <th>محل نمایش</th>
+                            <th>ترتیب نمایش</th>
+                            <th>متن دکمه</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl"
+                                             alt="تصویر بنر"
+                                             style="width:130px !important;
+                                                    height:70px !important;
+                                                    object-fit:contain !important;
+                                                    max-width:130px !important;
+                                                    display:block;" />
+                                    }
+                                    else
+                                    {
+                                        <span>بدون تصویر</span>
+                                    }
+                                </td>
+
+                                <td>@item.Title</td>
+
+                                <td>
+                                    @if (item.Position == 1)
+                                    {
+                                        <span>بالای صفحه اصلی</span>
+                                    }
+                                    else if (item.Position == 2)
+                                    {
+                                        <span>پایین صفحه اصلی</span>
+                                    }
+                                    else
+                                    {
+                                        <span>سایر بخش‌ها</span>
+                                    }
+                                </td>
+
+                                <td>@item.Order</td>
+
+                                <td>@item.ButtonText</td>
+
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="text-success">فعال</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">غیرفعال</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a asp-controller="HomeBanner"
+                                       asp-action="Update"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-info action-btn">
+                                        ویرایش
+                                    </a>
+
+                                    <a asp-controller="HomeBanner"
+                                       asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-danger action-btn"
+                                       onclick="return confirm('آیا از حذف این بنر مطمئن هستید؟')">
+                                        حذف
+                                    </a>
+                                </td>
+                            </tr>
+
+                            i++;
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

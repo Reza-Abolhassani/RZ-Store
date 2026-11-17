@@ -1,0 +1,109 @@
+﻿@model List<Admin.Models.AddressDto>
+
+@{
+    ViewData["Title"] = "مدیریت آدرس‌ها";
+}
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5>مدیریت آدرس‌ها</h5>
+
+            <a asp-controller="Address"
+               asp-action="Add"
+               class="btn btn-success">
+                افزودن آدرس
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped text-center">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>عنوان آدرس</th>
+                            <th>نام کاربر</th>
+                            <th>استان</th>
+                            <th>شهر</th>
+                            <th>کد پستی</th>
+                            <th>آدرس کامل</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            int row = 1;
+
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@row</td>
+                                    <td>@item.Title</td>
+                                    <td>@item.UsersName</td>
+                                    <td>@item.ProvincesName</td>
+                                    <td>@item.CitiesName</td>
+                                    <td>@item.PostalCode</td>
+                                    <td>@item.FullAddress</td>
+
+                                    <td>
+
+                                        <a asp-controller="Address"
+                                           asp-action="Update"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-primary btn-sm">
+                                            ویرایش
+                                        </a>
+
+                                        <form asp-controller="Address"
+                                              asp-action="Delete"
+                                              asp-route-id="@item.Id"
+                                              method="post"
+                                              style="display:inline"
+                                              onsubmit="return confirm('آیا از حذف این آدرس اطمینان دارید؟')">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                حذف
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+                                </tr>
+
+                                row++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8">
+                                    هیچ آدرسی ثبت نشده است.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

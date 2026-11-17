@@ -1,0 +1,230 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model OrderDto
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 25px 15px;
+    }
+
+    .category-card {
+        max-width: 510px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 22px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .category-field .form-control {
+            display: block;
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 9px 12px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .category-field .readonly-field {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+    .category-submit {
+        display: block;
+        width: 100%;
+        max-width: 215px;
+        min-height: 44px;
+        margin: 10px auto 0;
+        border: none;
+        border-radius: 7px;
+        background: #62bd96;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #4eaa83;
+        }
+
+    @@media (max-width: 576px) {
+        .category-card-body {
+            padding: 18px;
+        }
+
+        .category-card-header {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="category-page">
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-shopping-cart"></i>
+                ویرایش سفارش
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="Order"
+                  asp-action="Update"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <!-- انتخاب مشتری -->
+                <div class="category-field">
+                    <label asp-for="UserId">انتخاب مشتری</label>
+
+                    <select asp-for="UserId"
+                            class="form-control"
+                            asp-items="@(new SelectList(Model.Users, "Id", "PhoneNumber"))">
+
+                        <option value="">مشتری را انتخاب کنید</option>
+
+                    </select>
+
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+
+                <!-- کد سفارش -->
+                <div class="category-field">
+                    <label asp-for="Code">کد سفارش</label>
+
+                    <input asp-for="Code"
+                           class="form-control"
+                           placeholder="کد سفارش" />
+
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+
+                <!-- وضعیت پرداخت -->
+                <div class="category-field">
+                    <label asp-for="IsPaid">وضعیت پرداخت</label>
+
+                    <select asp-for="IsPaid" class="form-control">
+                        <option value="false">پرداخت نشده</option>
+                        <option value="true">پرداخت شده</option>
+                    </select>
+
+                    <span asp-validation-for="IsPaid" class="text-danger"></span>
+                </div>
+
+                <!-- وضعیت سفارش -->
+                <div class="category-field">
+                    <label asp-for="Status">وضعیت سفارش</label>
+
+                    <select asp-for="Status"
+                            class="form-control"
+                            asp-items="Html.GetEnumSelectList<OrderStatus>()">
+                    </select>
+
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <!-- روش ارسال -->
+                <div class="category-field">
+                    <label asp-for="Shipping">روش ارسال</label>
+
+                    <input asp-for="Shipping"
+                           class="form-control"
+                           placeholder="مثلاً پست یا پیک" />
+
+                    <span asp-validation-for="Shipping" class="text-danger"></span>
+                </div>
+
+                <!-- هزینه ارسال -->
+                <div class="category-field">
+                    <label asp-for="ShippingPrice">هزینه ارسال (تومان)</label>
+
+                    <input asp-for="ShippingPrice"
+                           type="number"
+                           min="0"
+                           class="form-control" />
+
+                    <span asp-validation-for="ShippingPrice" class="text-danger"></span>
+                </div>
+
+                <!-- مبلغ خام -->
+                <div class="category-field">
+                    <label>قیمت اصلی سفارش (تومان)</label>
+
+                    <input type="text"
+                           value="@Model.RawPrice.ToString("N0")"
+                           class="form-control readonly-field"
+                           readonly />
+                </div>
+
+                <!-- مبلغ تخفیف -->
+                <div class="category-field">
+                    <label>تخفیف سفارش (تومان)</label>
+
+                    <input type="text"
+                           value="@Model.Discount.ToString("N0")"
+                           class="form-control readonly-field"
+                           readonly />
+                </div>
+
+                <!-- مبلغ نهایی -->
+                <div class="category-field">
+                    <label>مبلغ نهایی سفارش (تومان)</label>
+
+                    <input type="text"
+                           value="@Model.Total.ToString("N0")"
+                           class="form-control readonly-field"
+                           readonly />
+                </div>
+
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ذخیره تغییرات
+                </button>
+
+                <a href="/Order/List"
+                   class="btn btn-default"
+                   style="display:block; text-align:center; margin-top:12px;">
+                    بازگشت به لیست سفارش‌ها
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+</div>

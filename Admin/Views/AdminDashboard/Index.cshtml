@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "داشبورد مدیریت";
+}
+
+<div class="col-lg-12">
+
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-speedometer"></i>
+                    داشبورد مدیریت فروشگاه R & Z
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="alert alert-info">
+                <i class="icon-info"></i>
+                به پنل مدیریت فروشگاه R & Z خوش آمدید.
+            </div>
+
+            @* آمار کلی فروشگاه *@
+
+            <div class="row">
+
+                @* تعداد کاربران *@
+                <div class="col-lg-4 col-md-6">
+                    <div class="portlet box shadow">
+
+                        <div class="portlet-heading bg-info">
+                            <div class="portlet-title">
+                                <h3 class="title">
+                                    <i class="icon-people"></i>
+                                    کاربران
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="portlet-body text-center">
+                            <h2>
+                                @ViewBag.UserCount
+                            </h2>
+                            <p>تعداد کل کاربران ثبت‌نام‌شده</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                @* تعداد محصولات *@
+                <div class="col-lg-4 col-md-6">
+                    <div class="portlet box shadow">
+
+                        <div class="portlet-heading bg-success">
+                            <div class="portlet-title">
+                                <h3 class="title">
+                                    <i class="icon-present"></i>
+                                    محصولات
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="portlet-body text-center">
+                            <h2>
+                                @ViewBag.ProductCount
+                            </h2>
+                            <p>تعداد کل محصولات فروشگاه</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                @* تعداد سفارش‌ها *@
+                <div class="col-lg-4 col-md-6">
+                    <div class="portlet box shadow">
+
+                        <div class="portlet-heading bg-warning">
+                            <div class="portlet-title">
+                                <h3 class="title">
+                                    <i class="icon-basket"></i>
+                                    سفارش‌ها
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="portlet-body text-center">
+                            <h2>
+                                @ViewBag.OrderCount
+                            </h2>
+                            <p>تعداد کل سفارش‌های ثبت‌شده</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@* بخش راهنمای مدیریت *@
+
+<div class="col-lg-12">
+
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-grid"></i>
+                    بخش‌های مدیریت فروشگاه
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="alert alert-info">
+                        <i class="icon-basket"></i>
+                        <strong>مدیریت سفارش‌ها</strong>
+                        <p>مشاهده و مدیریت سفارش‌های مشتریان</p>
+                        <a href="/Order/List">مشاهده سفارش‌ها</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="alert alert-success">
+                        <i class="icon-present"></i>
+                        <strong>مدیریت محصولات</strong>
+                        <p>افزودن و ویرایش محصولات فروشگاه</p>
+                        <a href="/Product/List">مشاهده محصولات</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="alert alert-warning">
+                        <i class="icon-people"></i>
+                        <strong>مدیریت مشتریان</strong>
+                        <p>مشاهده فهرست کاربران فروشگاه</p>
+                        <a href="/User/List">مشاهده مشتریان</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

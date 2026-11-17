@@ -1,0 +1,197 @@
+﻿
+
+@section style {
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+
+    <style>
+        .order-action-btn {
+    width: 120px !important;
+    height: 40px !important;
+    min-width: 120px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 3px;
+    padding: 0 5px !important;
+    font-size: 13px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+    </style>
+
+
+}
+
+@section script {
+    <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/fa.json"></script>
+    <script src="/assets/js/pages/datatable-export.js"></script>
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-shopping-cart"></i>
+                    لیست سفارش‌ها
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="top-buttons-box mb-2">
+                <a class="btn btn-success" href="/Order/Add">
+                    <i class="icon-plus"></i>
+                    ثبت سفارش جدید
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped" id="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>کد سفارش</th>
+                            <th>نام مشتری</th>
+                            <th>نام خانوادگی</th>
+                            <th>شماره تماس</th>
+                            <th>وضعیت پرداخت</th>
+                            <th>وضعیت سفارش</th>
+                            <th>روش ارسال</th>
+                            <th>هزینه ارسال</th>
+                            <th>قیمت اصلی</th>
+                            <th>تخفیف</th>
+                            <th>مبلغ نهایی</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+
+                                <td>@item.Code</td>
+
+                                <td>@item.UserFirstName</td>
+
+                                <td>@item.UserLastName</td>
+
+                                <td>@item.UserPhoneNumber</td>
+
+                                <td>
+                                    @if (item.IsPaid)
+                                    {
+                                        <span class="text-success">پرداخت شده</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">پرداخت نشده</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case OrderStatus.NotPayed:
+                                            <span class="text-danger">پرداخت نشده</span>
+                                            break;
+
+                                        case OrderStatus.Pending:
+                                            <span class="text-warning">در انتظار پردازش</span>
+                                            break;
+
+                                        case OrderStatus.Shipped:
+                                            <span class="text-info">ارسال شده</span>
+                                            break;
+
+                                        case OrderStatus.Delivered:
+                                            <span class="text-success">تحویل داده شده</span>
+                                            break;
+
+                                        case OrderStatus.Cancelled:
+                                            <span class="text-danger">لغو شده</span>
+                                            break;
+
+                                        case OrderStatus.Returned:
+                                            <span class="text-muted">مرجوع شده</span>
+                                            break;
+
+                                        default:
+                                            <span>نامشخص</span>
+                                            break;
+                                    }
+                                </td>
+
+                                <td>@item.Shipping</td>
+
+                                <td>@item.ShippingPrice.ToString("N0") تومان</td>
+
+                                <td>@item.RawPrice.ToString("N0") تومان</td>
+
+                                <td>@item.Discount.ToString("N0") تومان</td>
+
+                                <td>
+                                    <strong>
+                                        @item.Total.ToString("N0") تومان
+                                    </strong>
+                                </td>
+
+                                <td>
+
+                                    <a href="/OrderItem/List?OId=@item.Id"
+                                       class="btn btn-success order-action-btn">
+                                        اقلام سفارش
+                                    </a>
+
+                                    <a href="/Order/Update?id=@item.Id"
+                                       class="btn btn-info order-action-btn">
+                                        ویرایش
+                                    </a>
+
+                                    <form asp-controller="Order"
+                                          asp-action="Delete"
+                                          method="post"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('آیا از حذف این سفارش و تمام محصولات آن مطمئن هستید؟')">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="Id" value="@item.Id" />
+
+                                        <button type="submit" class="btn btn-danger order-action-btn">
+                                            حذف
+                                        </button>
+
+                                    </form>
+
+                                </td>
+                            </tr>
+
+                            i++;
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

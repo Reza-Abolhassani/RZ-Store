@@ -1,0 +1,139 @@
+﻿@model List<ProductDto>
+
+@section style {
+
+    <!-- BEGIN PAGE CSS -->
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+    <!-- END PAGE CSS -->
+
+    <style>
+        .product-action-btn {
+            width: 120px !important;
+            height: 40px !important;
+            min-width: 120px;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            margin: 3px;
+            padding: 0 5px !important;
+            font-size: 13px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+    </style>
+}
+
+@section script {
+
+    <!-- BEGIN PAGE JAVASCRIPT -->
+    <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/fa.json"></script>
+    <script src="/assets/js/pages/datatable-export.js"></script>
+    <!-- END PAGE JAVASCRIPT -->
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-frane"></i>
+                    لیست محصولات
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="top-buttons-box mb-2">
+                <a class="btn btn-success" href="/Product/Add">
+                    <i class="icon-plus"></i>
+                    افزودن محصول
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped" id="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>تصویر</th>
+                            <th>نام محصول</th>
+                            <th>دسته‌بندی</th>
+                            <th>کد محصول</th>
+                            <th>SKU</th>
+                            <th>قیمت اصلی</th>
+                            <th>تخفیف</th>
+                            <th>قیمت نهایی</th>
+                            <th>موجودی</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+
+                                <td>
+                                    <img src="@item.ImageUrl"
+                                         width="80"
+                                         height="80"
+                                         style="object-fit:cover;" />
+                                </td>
+
+                                <td>@item.Title</td>
+
+                                <td>@item.CategoryTitle</td>
+
+                                <td>@item.Code</td>
+
+                                <td>@item.SKU</td>
+
+                                <td>@item.RawPrice.ToString("N0") تومان</td>
+
+                                <td>@item.Discount درصد</td>
+
+                                <td>@item.Total.ToString("N0") تومان</td>
+
+                                <td>@item.Count</td>
+
+                                <td>
+                                    <a href="/Product/Update?id=@item.Id"
+                                       class="btn btn-info product-action-btn">
+                                        ویرایش
+                                    </a>
+
+                                    <a href="/Product/Delete?id=@item.Id"
+                                       class="btn btn-danger product-action-btn"
+                                       onclick="return confirm('آیا از حذف این محصول مطمئن هستید؟')">
+                                        حذف
+                                    </a>
+                                </td>
+                            </tr>
+
+                            i++;
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

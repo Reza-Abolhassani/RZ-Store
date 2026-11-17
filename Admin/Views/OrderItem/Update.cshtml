@@ -1,0 +1,215 @@
+﻿@model OrderItemDto
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 15px;
+    }
+
+    .category-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 20px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+    .category-submit {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #218838;
+        }
+
+    .total-box {
+        background: #f5f9f6;
+        border: 1px solid #d8eadc;
+        border-radius: 7px;
+        padding: 15px;
+        font-weight: bold;
+        color: #218838;
+    }
+
+    @@media(max-width: 768px) {
+        .category-card-body {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="category-page">
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-edit"></i>
+                ویرایش آیتم سفارش
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="OrderItem"
+                  asp-action="Update"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All"
+                     class="text-danger">
+                </div>
+
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="OrderId" />
+                <input type="hidden" asp-for="ProductId" />
+
+                <div class="category-field">
+                    <label>عنوان محصول</label>
+                    <input type="text"
+                           class="form-control"
+                           value="@Model.ProductTitle"
+                           readonly />
+                </div>
+
+                <div class="category-field">
+                    <label>قیمت واحد محصول</label>
+                    <input type="text"
+                           id="productPrice"
+                           class="form-control"
+                           value="@Model.ProductPrice"
+                           readonly />
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Count">تعداد محصول</label>
+                    <input asp-for="Count"
+                           type="number"
+                           min="1"
+                           id="count"
+                           class="form-control"
+                           placeholder="تعداد جدید را وارد کنید" />
+                    <span asp-validation-for="Count"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Discount">درصد تخفیف</label>
+                    <input asp-for="Discount"
+                           type="number"
+                           min="0"
+                           max="100"
+                           id="discount"
+                           class="form-control" />
+                    <span asp-validation-for="Discount"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="category-field">
+                    <label>مبلغ اولیه</label>
+                    <input type="text"
+                           id="rawPrice"
+                           class="form-control"
+                           readonly />
+                </div>
+
+                <div class="category-field">
+                    <label>مبلغ تخفیف</label>
+                    <input type="text"
+                           id="discountAmount"
+                           class="form-control"
+                           readonly />
+                </div>
+
+                <div class="category-field">
+                    <label>مبلغ نهایی</label>
+                    <div class="total-box">
+                        <span id="finalTotal"></span> تومان
+                    </div>
+                </div>
+
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ثبت تغییرات
+                </button>
+
+                <a href="/OrderItem/List?OId=@Model.OrderId"
+                   class="btn btn-default"
+                   style="margin-right:10px;">
+                    بازگشت به لیست سفارش
+                </a>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const price = Number(document.getElementById("productPrice").value);
+            const count = document.getElementById("count");
+            const discount = document.getElementById("discount");
+
+            const rawPrice = document.getElementById("rawPrice");
+            const discountAmount = document.getElementById("discountAmount");
+            const finalTotal = document.getElementById("finalTotal");
+
+            function formatNumber(value) {
+                return Math.round(value).toLocaleString("en-US");
+            }
+
+            function calculate() {
+
+                let quantity = Number(count.value) || 0;
+                let percent = Number(discount.value) || 0;
+
+                percent = Math.min(100, Math.max(0, percent));
+
+                let raw = price * quantity;
+                let discountValue = Math.floor(raw * percent / 100);
+                let total = raw - discountValue;
+
+                rawPrice.value = formatNumber(raw);
+                discountAmount.value = formatNumber(discountValue);
+                finalTotal.innerText = formatNumber(total);
+            }
+
+            count.addEventListener("input", calculate);
+            discount.addEventListener("input", calculate);
+
+            calculate();
+        });
+    </script>
+}

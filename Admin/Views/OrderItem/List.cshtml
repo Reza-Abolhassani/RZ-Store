@@ -1,0 +1,141 @@
+﻿@model List<OrderItemDto>
+
+@section style {
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+}
+
+@section script {
+    <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/fa.json"></script>
+    <script src="/assets/js/pages/datatable-export.js"></script>
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-shopping-cart"></i>
+                    لیست آیتم‌های سفارش
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <!-- دکمه افزودن محصول -->
+            <div class="top-buttons-box mb-2">
+
+                <a class="btn btn-success"
+                   href="/OrderItem/Add?OId=@ViewBag.OrderId">
+
+                    <i class="icon-plus"></i>
+                    افزودن محصول به سفارش
+
+                </a>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover table-striped" id="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>عنوان محصول</th>
+                            <th>قیمت محصول</th>
+                            <th>تعداد</th>
+                            <th>تخفیف</th>
+                            <th>مبلغ کل</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int i = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>@i</td>
+
+                                <td>
+                                    @item.ProductTitle
+                                </td>
+
+                                <td>
+                                    @item.ProductPrice.ToString("N0") تومان
+                                </td>
+
+                                <td>
+                                    @item.Count
+                                </td>
+
+                                <td>
+                                    @item.Discount.ToString("N0") تومان
+                                </td>
+
+                                <td>
+                                    @item.Total.ToString("N0") تومان
+                                </td>
+
+                                <td>
+
+                                    <a href="/OrderItem/Update?id=@item.Id"
+                                       class="btn btn-info">
+                                        ویرایش
+                                    </a>
+
+                                    <form asp-controller="OrderItem"
+                                          asp-action="Delete"
+                                          method="post"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('آیا از حذف این آیتم سفارش مطمئن هستید؟')">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="Id" value="@item.Id" />
+
+                                        <button type="submit" class="btn btn-danger">
+                                            حذف
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                            i++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- بازگشت به لیست سفارش‌ها -->
+            <div style="margin-top:15px;">
+
+                <a href="/Order/List" class="btn btn-default">
+                    بازگشت به لیست سفارش‌ها
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>

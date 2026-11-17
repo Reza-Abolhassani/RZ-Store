@@ -1,0 +1,93 @@
+﻿@model List<Admin.Models.ShippingTypeDto>
+
+@{
+    ViewData["Title"] = "روش‌های ارسال";
+}
+
+<div class="container-fluid">
+    <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>مدیریت روش‌های ارسال</h5>
+
+            <a asp-controller="ShippingType"
+               asp-action="Add"
+               class="btn btn-success">
+                افزودن روش ارسال
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام روش ارسال</th>
+                            <th>هزینه ارسال</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            int row = 1;
+
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@row</td>
+
+                                    <td>@item.Name</td>
+
+                                    <td>@item.Price.ToString("N0")</td>
+
+                                    <td>
+                                        <a asp-controller="ShippingType"
+                                           asp-action="Update"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-primary btn-sm">
+                                            ویرایش
+                                        </a>
+
+                                        <form asp-controller="ShippingType"
+                                              asp-action="Delete"
+                                              asp-route-id="@item.Id"
+                                              method="post"
+                                              style="display:inline"
+                                              onsubmit="return confirm('آیا از حذف این روش ارسال اطمینان دارید؟')">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                حذف
+                                            </button>
+
+                                        </form>
+                                    </td>
+                                </tr>
+
+                                row++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">
+                                    هیچ روش ارسالی ثبت نشده است.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

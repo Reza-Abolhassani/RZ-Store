@@ -1,0 +1,216 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model Admin.Models.AddressDto
+
+@{
+    ViewData["Title"] = "ویرایش آدرس";
+}
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h5>ویرایش آدرس</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-controller="Address"
+                  asp-action="Update"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Title">عنوان آدرس</label>
+
+                        <input asp-for="Title"
+                               class="form-control"
+                               placeholder="مثلاً منزل یا محل کار" />
+
+                        <span asp-validation-for="Title"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="UserId">انتخاب کاربر</label>
+
+                        <select asp-for="UserId"
+                                class="form-control"
+                                asp-items="@(new SelectList(Model.Users, "Id", "UserName"))">
+
+                            <option value="">انتخاب کاربر</option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ProvinceId">استان</label>
+
+                        <select asp-for="ProvinceId"
+                                id="ProvinceId"
+                                class="form-control">
+
+                            <option value="">انتخاب استان</option>
+
+                            @foreach (var province in Model.Provinces)
+                            {
+                                <option value="@province.Id">
+                                    @province.Name
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CityId">شهر</label>
+
+                        <select asp-for="CityId"
+                                id="CityId"
+                                class="form-control">
+
+                            <option value="">در حال بارگذاری شهرها...</option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="PostalCode">کد پستی</label>
+
+                        <input asp-for="PostalCode"
+                               class="form-control"
+                               placeholder="کد پستی را وارد کنید" />
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label asp-for="FullAddress">آدرس کامل</label>
+
+                        <textarea asp-for="FullAddress"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="آدرس کامل را وارد کنید"></textarea>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    ذخیره تغییرات
+                </button>
+
+                <a asp-controller="Address"
+                   asp-action="List"
+                   class="btn btn-secondary">
+                    بازگشت
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section script {
+
+    <script>
+
+        $(document).ready(function () {
+
+            var selectedCityId = '@Model.CityId';
+
+            function loadCities(provinceId, selectedCityId) {
+
+                $('#CityId').empty();
+
+                if (!provinceId) {
+
+                    $('#CityId').append(
+                        '<option value="">ابتدا استان را انتخاب کنید</option>'
+                    );
+
+                    return;
+                }
+
+                $('#CityId').append(
+                    '<option value="">در حال بارگذاری...</option>'
+                );
+
+                $.ajax({
+
+                    url: '@Url.Action("GetCitiesOfProvince", "Address")',
+
+                    type: 'GET',
+
+                    data: { provinceId: provinceId },
+
+                    success: function (cities) {
+
+                        $('#CityId').empty();
+
+                        $('#CityId').append(
+                            '<option value="">انتخاب شهر</option>'
+                        );
+
+                        $.each(cities, function (index, city) {
+
+                            var option = $('<option>', {
+                                value: city.id,
+                                text: city.name
+                            });
+
+                            if (city.id.toLowerCase() ===
+                                selectedCityId.toLowerCase()) {
+
+                                option.prop('selected', true);
+
+                            }
+
+                            $('#CityId').append(option);
+
+                        });
+
+                    },
+
+                    error: function () {
+
+                        $('#CityId').empty();
+
+                        $('#CityId').append(
+                            '<option value="">خطا در دریافت شهرها</option>'
+                        );
+
+                        alert('دریافت لیست شهرها با خطا مواجه شد.');
+
+                    }
+
+                });
+
+            }
+
+            // بارگذاری شهرهای استان قبلی هنگام باز شدن صفحه
+
+            var provinceId = $('#ProvinceId').val();
+
+            loadCities(provinceId, selectedCityId);
+
+            // بارگذاری شهرها هنگام تغییر استان
+
+            $('#ProvinceId').change(function () {
+
+                var newProvinceId = $(this).val();
+
+                loadCities(newProvinceId, '');
+
+            });
+
+        });
+
+    </script>
+
+}

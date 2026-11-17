@@ -1,0 +1,56 @@
+﻿@model Admin.Models.ShippingTypeDto
+
+@{
+    ViewData["Title"] = "افزودن روش ارسال";
+}
+
+<div class="container-fluid">
+    <div class="card">
+
+        <div class="card-header">
+            <h5>افزودن روش ارسال</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-controller="ShippingType"
+                  asp-action="Add"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="form-group mb-3">
+                    <label asp-for="Name">نام روش ارسال</label>
+
+                    <input asp-for="Name"
+                           class="form-control"
+                           placeholder="مثلاً پست پیشتاز" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Price">هزینه ارسال (تومان)</label>
+
+                    <input asp-for="Price"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           placeholder="هزینه ارسال را وارد کنید" />
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">
+                        ثبت روش ارسال
+                    </button>
+
+                    <a asp-controller="ShippingType"
+                       asp-action="List"
+                       class="btn btn-secondary">
+                        بازگشت
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

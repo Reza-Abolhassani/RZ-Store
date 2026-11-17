@@ -1,0 +1,56 @@
+﻿@model CommentDto
+
+@{
+    ViewData["Title"] = "جزئیات نظر";
+}
+
+<div class="container-fluid">
+    <h4 class="mb-4">جزئیات نظر</h4>
+
+    <div class="card">
+        <div class="card-body">
+
+            <dl class="row">
+                <dt class="col-sm-3">نام نویسنده:</dt>
+                <dd class="col-sm-9">@Model.AuthorName</dd>
+
+                <dt class="col-sm-3">ایمیل:</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">محصول:</dt>
+                <dd class="col-sm-9">@Model.ProductsName</dd>
+
+                <dt class="col-sm-3">متن نظر:</dt>
+                <dd class="col-sm-9">@Model.Content</dd>
+
+                <dt class="col-sm-3">تاریخ ثبت:</dt>
+                <dd class="col-sm-9">
+                    @Model.CreationDateTime.ToString("yyyy/MM/dd HH:mm")
+                </dd>
+
+                <dt class="col-sm-3">وضعیت:</dt>
+                <dd class="col-sm-9">
+                    @switch (Model.Status)
+                    {
+                        case Entities.Constants.CommentStatus.Pending:
+                            <span class="badge bg-warning">در انتظار بررسی</span>
+                            break;
+
+                        case Entities.Constants.CommentStatus.Approved:
+                            <span class="badge bg-success">تأیید شده</span>
+                            break;
+
+                        case Entities.Constants.CommentStatus.Rejected:
+                            <span class="badge bg-danger">رد شده</span>
+                            break;
+                    }
+                </dd>
+            </dl>
+
+            <a asp-action="Index" class="btn btn-secondary">
+                بازگشت به فهرست نظرات
+            </a>
+
+        </div>
+    </div>
+</div>

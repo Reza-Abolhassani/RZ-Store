@@ -1,0 +1,182 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+
+@model Admin.Models.AddressDto
+
+
+
+@{
+    ViewData["Title"] = "افزودن آدرس";
+}
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h5>افزودن آدرس جدید</h5>
+        </div>
+
+        <div class="card-body">
+
+            <h3 style="color:red">تست نمایش فرم آدرس</h3>
+
+            <p style="color:blue">
+                تعداد استان‌ها:
+                @(Model?.Provinces?.Count ?? -1)
+            </p>
+
+            <form asp-controller="Address"
+                  asp-action="Add"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Title">عنوان آدرس</label>
+
+                        <input asp-for="Title"
+                               class="form-control"
+                               placeholder="مثلاً منزل یا محل کار" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="UserId">انتخاب کاربر</label>
+
+                        <select asp-for="UserId"
+                                class="form-control"
+                                asp-items="@(new SelectList(Model.Users, "Id", "UserName"))">
+
+                            <option value="">انتخاب کاربر</option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ProvinceId">استان</label>
+
+                        <select asp-for="ProvinceId"
+                                id="ProvinceId"
+                                class="form-control">
+
+                            <option value="">انتخاب استان</option>
+
+                            @foreach (var province in Model.Provinces)
+                            {
+                                <option value="@province.Id">
+                                    @province.Name
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CityId">شهر</label>
+
+                        <select asp-for="CityId"
+                                id="CityId"
+                                class="form-control">
+
+                            <option value="">ابتدا استان را انتخاب کنید</option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="PostalCode">کد پستی</label>
+
+                        <input asp-for="PostalCode"
+                               class="form-control"
+                               placeholder="کد پستی را وارد کنید" />
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label asp-for="FullAddress">آدرس کامل</label>
+
+                        <textarea asp-for="FullAddress"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="آدرس کامل را وارد کنید"></textarea>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    ثبت آدرس
+                </button>
+
+                <a asp-controller="Address"
+                   asp-action="List"
+                   class="btn btn-secondary">
+                    بازگشت
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section script {
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#ProvinceId').change(function () {
+
+                var provinceId = $(this).val();
+
+                $('#CityId').empty();
+
+                if (provinceId === '') {
+                    $('#CityId').append(
+                        '<option value="">ابتدا استان را انتخاب کنید</option>'
+                    );
+                    return;
+                }
+
+                $.ajax({
+
+                    url: '/Address/GetCitiesOfProvince',
+
+                    type: 'GET',
+
+                    data: { provinceId: provinceId },
+
+                    success: function (cities) {
+
+                        $('#CityId').append(
+                            '<option value="">انتخاب شهر</option>'
+                        );
+
+                        $.each(cities, function (index, city) {
+
+                            $('#CityId').append(
+                                $('<option>', {
+                                    value: city.id,
+                                    text: city.name
+                                })
+                            );
+
+                        });
+
+                    },
+
+                    error: function () {
+                        alert('دریافت لیست شهرها با خطا مواجه شد.');
+                    }
+
+                });
+
+            });
+
+        });
+
+    </script>
+
+}

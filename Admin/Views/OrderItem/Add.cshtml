@@ -1,0 +1,156 @@
+﻿@model OrderItemDto
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 15px;
+    }
+
+    .category-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 20px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+    .category-submit {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #218838;
+        }
+
+    @@media(max-width: 768px) {
+        .category-card-body {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="category-page">
+
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-plus"></i>
+                افزودن محصول به سفارش
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="OrderItem"
+                  asp-action="Add"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All"
+                     class="text-danger">
+                </div>
+
+                <!-- شناسه سفارش -->
+                <input type="hidden" asp-for="OrderId" />
+
+                <div class="category-field">
+                    <label>شماره سفارش</label>
+
+                    <input type="text"
+                           class="form-control"
+                           value="@Model.OrderId"
+                           readonly />
+                </div>
+
+                <!-- انتخاب محصول -->
+                <div class="category-field">
+
+                    <label asp-for="ProductId">انتخاب محصول</label>
+
+                    <select asp-for="ProductId" class="form-control">
+
+                        <option value="">محصول مورد نظر را انتخاب کنید</option>
+
+                        @foreach (var item in Model.products)
+                        {
+                            <option value="@item.Id">
+                                @item.Title - قیمت: @item.Total.ToString("N0") تومان - موجودی: @item.Count
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="ProductId"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <!-- تعداد محصول -->
+                <div class="category-field">
+
+                    <label asp-for="Count">تعداد محصول</label>
+
+                    <input asp-for="Count"
+                           type="number"
+                           min="1"
+                           class="form-control"
+                           placeholder="تعداد محصول را وارد کنید" />
+
+                    <span asp-validation-for="Count"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <!-- دکمه ثبت -->
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ثبت محصول در سفارش
+                </button>
+
+                <a href="/OrderItem/List?OId=@Model.OrderId"
+                   class="btn btn-default"
+                   style="margin-right:10px;">
+
+                    بازگشت به لیست سفارش
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,281 @@
+﻿@model ProductDto
+
+@section script {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // پیش‌نمایش تصویر محصول
+            const imageInput = document.getElementById("ImageFile");
+            const imagePreview = document.getElementById("imagePreview");
+            const previewBox = document.getElementById("previewBox");
+
+            if (imageInput && imagePreview && previewBox) {
+                imageInput.addEventListener("change", function () {
+                    const file = this.files[0];
+
+                    if (file && file.type.startsWith("image/")) {
+                        imagePreview.src = URL.createObjectURL(file);
+                        previewBox.style.display = "block";
+                    } else {
+                        imagePreview.src = "";
+                        previewBox.style.display = "none";
+                    }
+                });
+            }
+
+            // محاسبه خودکار قیمت نهایی
+            const rawPriceInput = document.getElementById("RawPrice");
+            const discountInput = document.getElementById("Discount");
+            const totalInput = document.getElementById("Total");
+
+            function calculateTotal() {
+                const rawPrice = parseFloat(rawPriceInput.value) || 0;
+                let discount = parseFloat(discountInput.value) || 0;
+
+                if (discount < 0) discount = 0;
+                if (discount > 100) discount = 100;
+
+                const total = rawPrice - (rawPrice * discount / 100);
+
+                totalInput.value = Math.round(total);
+            }
+
+            rawPriceInput.addEventListener("input", calculateTotal);
+            discountInput.addEventListener("input", calculateTotal);
+
+            calculateTotal();
+        });
+    </script>
+}
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 25px 15px;
+    }
+
+    .category-card {
+        max-width: 510px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 22px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .category-field .form-control {
+            display: block;
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 9px 12px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .category-field input[type="file"] {
+            height: auto;
+            background: #fafafa;
+            padding: 10px;
+            position: static;
+            opacity: 1;
+        }
+
+    .category-preview {
+        display: none;
+        margin-top: 15px;
+    }
+
+        .category-preview img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+    .category-submit {
+        display: block;
+        width: 100%;
+        max-width: 215px;
+        min-height: 44px;
+        margin: 10px auto 0;
+        border: none;
+        border-radius: 7px;
+        background: #62bd96;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #4eaa83;
+        }
+
+    @@media (max-width: 576px) {
+        .category-card-body {
+            padding: 18px;
+        }
+
+        .category-card-header {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="category-page">
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-shield"></i>
+                افزودن محصول
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="Product"
+                  asp-action="Add"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="category-field">
+                    <label asp-for="Title">نام محصول</label>
+                    <input asp-for="Title"
+                           class="form-control"
+                           placeholder="نام محصول را وارد کنید" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="CategoryId">دسته‌بندی محصول</label>
+                    <select asp-for="CategoryId"
+                            class="form-control"
+                            asp-items="@(new SelectList(Model.categories, "Id", "Title"))">
+                        <option value="">دسته‌بندی را انتخاب کنید</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Count">تعداد موجودی</label>
+                    <input asp-for="Count"
+                           type="number"
+                           class="form-control"
+                           placeholder="تعداد محصول را وارد کنید" />
+                    <span asp-validation-for="Count" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Code">کد محصول</label>
+                    <input asp-for="Code"
+                           class="form-control"
+                           placeholder="کد محصول را وارد کنید" />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="SKU">شناسه SKU</label>
+                    <input asp-for="SKU"
+                           class="form-control"
+                           placeholder="شناسه SKU را وارد کنید" />
+                    <span asp-validation-for="SKU" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Description">توضیحات محصول</label>
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="3"
+                              placeholder="توضیحات محصول را وارد کنید"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="RawPrice">قیمت اصلی (تومان)</label>
+                    <input asp-for="RawPrice"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           placeholder="قیمت اصلی محصول" />
+                    <span asp-validation-for="RawPrice" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Discount">تخفیف (درصد)</label>
+                    <input asp-for="Discount"
+                           type="number"
+                           min="0"
+                           max="100"
+                           class="form-control"
+                           placeholder="درصد تخفیف را وارد کنید" />
+                    <span asp-validation-for="Discount" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Total">قیمت نهایی (تومان)</label>
+                    <input asp-for="Total"
+                           type="number"
+                           class="form-control"
+                           readonly />
+                    <span asp-validation-for="Total" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="ImageFile">عکس محصول</label>
+
+                    <input asp-for="ImageFile"
+                           type="file"
+                           class="form-control"
+                           accept="image/*" />
+
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                    <div id="previewBox" class="category-preview">
+                        <p>پیش‌نمایش عکس انتخاب‌شده:</p>
+                        <img id="imagePreview" src="" alt="پیش‌نمایش عکس محصول" />
+                    </div>
+                </div>
+
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ثبت محصول
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>

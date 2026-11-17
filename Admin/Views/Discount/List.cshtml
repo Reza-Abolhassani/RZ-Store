@@ -1,0 +1,190 @@
+﻿@model List<Admin.Models.DiscountDto>
+
+@section style {
+
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+
+    <style>
+        .discount-action-btn {
+            width: 110px !important;
+            height: 40px !important;
+            min-width: 110px;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            margin: 3px;
+            padding: 0 5px !important;
+            font-size: 13px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .discount-status {
+            display: inline-block;
+            min-width: 75px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .discount-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .discount-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+}
+
+@section script {
+
+    <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/fa.json"></script>
+    <script src="/assets/js/pages/datatable-export.js"></script>
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-tag"></i>
+                    لیست تخفیف‌ها
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="top-buttons-box mb-2">
+                <a class="btn btn-success" href="/Discount/Add">
+                    <i class="icon-plus"></i>
+                    افزودن تخفیف
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped" id="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>کد تخفیف</th>
+                            <th>درصد تخفیف</th>
+                            <th>مبلغ تخفیف</th>
+                            <th>تاریخ شروع</th>
+                            <th>تاریخ پایان</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+
+                                <td>@item.Code</td>
+
+                                <td>
+                                    @(item.Percentage > 0
+                                                                    ? item.Percentage + " درصد"
+                                                                    : "-")
+                                </td>
+
+                                <td>
+                                    @(item.Amount > 0
+                                                                    ? item.Amount.ToString("N0") + " تومان"
+                                                                    : "-")
+                                </td>
+
+                                <td>@item.Startdate.ToString("yyyy/MM/dd")</td>
+
+                                <td>@item.EndDate.ToString("yyyy/MM/dd")</td>
+
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="discount-status discount-active">
+                                            فعال
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="discount-status discount-inactive">
+                                            غیرفعال
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a href="/Discount/Update?id=@item.Id"
+                                       class="btn btn-info discount-action-btn">
+                                        ویرایش
+                                    </a>
+
+                                    <form asp-controller="Discount"
+                                          asp-action="Delete"
+                                          method="post"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('آیا از حذف این تخفیف اطمینان دارید؟');">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="Id" value="@item.Id" />
+
+                                        <button type="submit"
+                                                class="discount-action-btn btn btn-danger">
+                                            حذف
+                                        </button>
+
+                                    </form>
+
+                                    <form asp-controller="Discount"
+                                          asp-action="ChangeStatus"
+                                          method="post"
+                                          style="display:inline-block">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="Id" value="@item.Id" />
+
+                                        <button type="submit"
+                                                class="btn @(item.IsActive ? "btn-warning" : "btn-success") discount-action-btn">
+
+                                            @(item.IsActive ? "غیرفعال کردن" : "فعال کردن")
+
+                                        </button>
+
+                                    </form>
+                                </td>
+                            </tr>
+
+                            i++;
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

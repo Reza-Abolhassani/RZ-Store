@@ -1,0 +1,172 @@
+﻿@model Admin.Models.DiscountDto
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 25px 15px;
+    }
+
+    .category-card {
+        max-width: 510px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 22px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .category-field .form-control {
+            display: block;
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 9px 12px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+    .category-submit {
+        display: block;
+        width: 100%;
+        max-width: 215px;
+        min-height: 44px;
+        margin: 10px auto 0;
+        border: none;
+        border-radius: 7px;
+        background: #62bd96;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #4eaa83;
+        }
+
+    @@media (max-width: 576px) {
+        .category-card-body {
+            padding: 18px;
+        }
+
+        .category-card-header {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="category-page">
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-tag"></i>
+                افزودن تخفیف
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="Discount"
+                  asp-action="Add"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All"
+                     class="text-danger"></div>
+
+                <div class="category-field">
+                    <label asp-for="Code">کد تخفیف</label>
+                    <input asp-for="Code"
+                           class="form-control"
+                           placeholder="مثلاً OFF20" />
+                    <span asp-validation-for="Code"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Percentage">درصد تخفیف</label>
+                    <input asp-for="Percentage"
+                           type="number"
+                           min="0"
+                           max="100"
+                           class="form-control"
+                           placeholder="درصد تخفیف را وارد کنید" />
+                    <span asp-validation-for="Percentage"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Amount">مبلغ تخفیف (تومان)</label>
+                    <input asp-for="Amount"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           placeholder="مبلغ تخفیف را وارد کنید" />
+                    <span asp-validation-for="Amount"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Startdate">تاریخ شروع</label>
+                    <input asp-for="Startdate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="Startdate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="EndDate">تاریخ پایان</label>
+                    <input asp-for="EndDate"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="EndDate"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="IsActive">وضعیت تخفیف</label>
+                    <select asp-for="IsActive" class="form-control">
+                        <option value="true">فعال</option>
+                        <option value="false">غیرفعال</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ثبت تخفیف
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>

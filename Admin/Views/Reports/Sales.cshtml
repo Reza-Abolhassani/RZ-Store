@@ -1,0 +1,124 @@
+﻿@model Admin.Models.ReportDto
+
+@{
+    ViewData["Title"] = "گزارش فروش";
+}
+
+<div class="container-fluid">
+
+    <h3 class="mb-4">گزارش فروش</h3>
+
+    <!-- آمار فروش -->
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>مجموع فروش</h6>
+                <h4 class="text-success">
+                    @Model.TotalSales.ToString("N0") تومان
+                </h4>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>کل سفارش‌ها</h6>
+                <h4>@Model.TotalOrders</h4>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>سفارش‌های پرداخت‌شده</h6>
+                <h4 class="text-success">@Model.PaidOrders</h4>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>سفارش‌های پرداخت‌نشده</h6>
+                <h4 class="text-danger">@Model.UnpaidOrders</h4>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- مجموع تخفیف -->
+    <div class="card shadow-sm p-3 mb-4">
+        <h6>مجموع تخفیف‌ها</h6>
+        <h4>
+            @Model.TotalDiscount.ToString("N0") تومان
+        </h4>
+    </div>
+
+    <!-- جدول فروش -->
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h5 class="mb-0">آخرین فروش‌های موفق</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover text-center">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>کد سفارش</th>
+                            <th>نام مشتری</th>
+                            <th>مبلغ سفارش</th>
+                            <th>وضعیت پرداخت</th>
+                            <th>تاریخ ثبت</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.RecentOrders != null && Model.RecentOrders.Any())
+                        {
+                            var index = 1;
+
+                            foreach (var item in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@item.Code</td>
+                                    <td>@item.CustomerName</td>
+                                    <td>@item.Total.ToString("N0") تومان</td>
+
+                                    <td>
+                                        <span class="badge bg-success">
+                                            پرداخت‌شده
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @item.CreationDateTime.ToString("yyyy/MM/dd")
+                                    </td>
+                                </tr>
+
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6">
+                                    هیچ فروش موفقی ثبت نشده است.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

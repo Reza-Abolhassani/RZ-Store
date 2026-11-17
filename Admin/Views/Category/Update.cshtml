@@ -1,0 +1,210 @@
+﻿@model CategoryDto
+
+@section script {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const imageInput = document.getElementById("ImageFile");
+            const imagePreview = document.getElementById("imagePreview");
+            const previewBox = document.getElementById("previewBox");
+
+            if (!imageInput || !imagePreview || !previewBox) return;
+
+            imageInput.addEventListener("change", function () {
+                const file = this.files[0];
+
+                if (file && file.type.startsWith("image/")) {
+                    imagePreview.src = URL.createObjectURL(file);
+                    previewBox.style.display = "block";
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 25px 15px;
+    }
+
+    .category-card {
+        max-width: 510px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 22px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .category-field .form-control {
+            display: block;
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 9px 12px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .category-field input[type="file"] {
+            height: auto;
+            background: #fafafa;
+            padding: 10px;
+            position: static;
+            opacity: 1;
+        }
+
+    .category-preview {
+        margin-top: 15px;
+    }
+
+        .category-preview img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+    .category-submit {
+        display: block;
+        width: 100%;
+        max-width: 215px;
+        min-height: 44px;
+        margin: 10px auto 0;
+        border: none;
+        border-radius: 7px;
+        background: #62bd96;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #4eaa83;
+        }
+
+    @@media (max-width: 576px) {
+        .category-card-body {
+            padding: 18px;
+        }
+
+        .category-card-header {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="category-page">
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-shield"></i>
+                ویرایش دسته‌بندی
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="Category"
+                  asp-action="Update"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="category-field">
+                    <label asp-for="Title">نام دسته‌بندی</label>
+                    <input asp-for="Title"
+                           class="form-control"
+                           placeholder="نام دسته‌بندی را وارد کنید" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Description">توضیحات</label>
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="3"
+                              placeholder="توضیحات دسته‌بندی را وارد کنید"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Order">ترتیب نمایش</label>
+                    <input asp-for="Order"
+                           type="number"
+                           class="form-control"
+                           placeholder="مثلاً 1" />
+                    <span asp-validation-for="Order" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label>تصویر فعلی دسته‌بندی</label>
+
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="category-preview">
+                            <img src="@Model.ImageUrl" alt="تصویر دسته‌بندی" />
+                        </div>
+                    }
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="ImageFile">انتخاب تصویر جدید</label>
+
+                    <input asp-for="ImageFile"
+                           type="file"
+                           class="form-control"
+                           accept="image/*" />
+
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                    <div id="previewBox" class="category-preview" style="display:none;">
+                        <p>پیش‌نمایش تصویر جدید:</p>
+                        <img id="imagePreview" src="" alt="پیش‌نمایش تصویر جدید" />
+                    </div>
+                </div>
+
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ذخیره تغییرات
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,300 @@
+﻿@model UserDto
+
+@if (Model == null)
+{
+    return;
+}
+<style>
+    #sidebar .user-box img.sidebar-profile-image {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+        aspect-ratio: 1 / 1;
+        object-fit: cover !important;
+        object-position: center;
+        border-radius: 50% !important;
+        display: block !important;
+        margin: 0 auto !important;
+    }
+</style>
+
+<!-- BEGIN HEADER -->
+<div class="navbar navbar-fixed-top" id="main-navbar">
+    <div class="header-right">
+        <a href="dashboard.html" class="logo-con">
+            <span class="img-responsive center-block"
+                  style="font-size: 26px; font-weight: bold; color: #fff; text-align: center;">
+                تنجه
+            </span>
+        </a>
+    </div><!-- /.header-right -->
+    <div class="header-left">
+        <div class="top-bar">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" class="btn" id="toggle-sidebar">
+                        <span class="menu"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="btn open" id="toggle-sidebar-top">
+                        <i class="icon-user-following"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="btn" id="toggle-dark-mode">
+                        <i class="icon-bulb"></i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-left">
+                <li class="dropdown">
+                    <a href="#" class="btn" id="toggle-fullscreen">
+                        <i class="icon-size-fullscreen"></i>
+                    </a>
+                </li>
+
+
+                <li class="dropdown dropdown-user">
+                    <a href="#" class="dropdown-toggle dropdown-hover" data-bs-toggle="dropdown">
+                        <img src="@Model.ImageUrl"
+                             alt="عکس پروفایل"
+                             class="img-circle img-responsive"
+                             style="width: 35px; height: 35px; object-fit: cover;">
+                        <span>@Model.FirstName @Model.LastName  </span>
+                        <i class="icon-arrow-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/User/EditProfile">
+                                <i class="icon-note"></i>
+                                ویرایش پروفایل
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/User/ChangePassword">
+                                <i class="icon-key"></i>
+                                تغییر رمز عبور
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/Auth/LogOut">
+                                <i class="icon-power"></i>
+                                خروج
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul><!-- /.navbar-left -->
+        </div><!-- /.top-bar -->
+    </div><!-- /.header-left -->
+</div><!-- /.navbar -->
+<!-- END HEADER -->
+<!-- BEGIN SIDEBAR -->
+<div id="sidebar">
+    <div class="sidebar-top">
+        <div class="search-box">
+            <form class="search-form" action="#" method="GET">
+                <div class="input-group">
+                    <input type="text" class="form-control placeholder-light" placeholder="جستجو..." name="key">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-round submit">
+                            <i class="icon-magnifier"></i>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div><!-- /.search-box -->
+        <div class="user-box">
+            <a href="#">
+                <img src="@Model.ImageUrl"
+                     alt="عکس پروفایل"
+                     class="img-circle img-responsive sidebar-profile-image">
+            </a>
+            <div class="user-details">
+                <h4>  @Model.FirstName @Model.LastName </h4>
+
+
+            </div><!-- /.user-details -->
+        </div><!-- /.user-box -->
+    </div><!-- /.sidebar-top -->
+
+
+    <div class="side-menu-container">
+        <ul class="metismenu" id="side-menu">
+
+            <!-- داشبورد اصلی -->
+            <li>
+                <a href="/AdminDashboard/Index">
+                    <i class="icon-home"></i>
+                    <span>داشبورد اصلی</span>
+                </a>
+            </li>
+
+            <!-- مدیریت محصولات -->
+            <li>
+                <a href="#" class="has-arrow">
+                    <i class="icon-present"></i>
+                    <span>مدیریت محصولات</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/Product/List">
+                            <i class="icon-list"></i>
+                            محصولات
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Category/List">
+                            <i class="icon-layers"></i>
+                            دسته‌بندی‌ها
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/AmazingProducts/List">
+                            <i class="icon-star"></i>
+                            محصولات شگفت‌انگیز
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Discount/List">
+                            <i class="icon-tag"></i>
+                            مدیریت تخفیف‌ها
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- مدیریت سفارشات -->
+            <li>
+                <a href="#" class="has-arrow">
+                    <i class="icon-basket"></i>
+                    <span>مدیریت سفارشات</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/Order/List">
+                            <i class="icon-list"></i>
+                            سفارشات
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/OrderItem/List">
+                            <i class="icon-list"></i>
+                            اقلام سفارش
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ShippingType/List">
+                            <i class="icon-plane"></i>
+                            روش‌های ارسال
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- مدیریت مشتریان -->
+            <li>
+                <a href="#" class="has-arrow">
+                    <i class="icon-people"></i>
+                    <span>مدیریت مشتریان</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/User/List">
+                            <i class="icon-user"></i>
+                            مشتریان
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Address/List">
+                            <i class="icon-location-pin"></i>
+                            آدرس‌های مشتریان
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Comment" asp-action="Index">
+                            <i class="icon-bubbles"></i>
+                            نظرات
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- مدیریت محتوا -->
+            <li>
+                <a href="#" class="has-arrow">
+                    <i class="icon-docs"></i>
+                    <span>مدیریت محتوا</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/Blog/List">
+                            <i class="icon-note"></i>
+                            مقالات
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/BlogCategory/List">
+                            <i class="icon-folder-alt"></i>
+                            دسته‌بندی مقالات
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/HomeBanner/List">
+                            <i class="icon-picture"></i>
+                            بنرهای صفحه اصلی
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- گزارشات -->
+            <li>
+                <a href="#" class="has-arrow">
+                    <i class="icon-chart"></i>
+                    <span>گزارشات</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="/Reports/Index">
+                            <i class="icon-list"></i>
+                            گزارش کلی
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Reports/Sales">
+                            <i class="icon-graph"></i>
+                            گزارش فروش
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- تنظیمات -->
+            <li>
+                <a asp-controller="StoreSettings" asp-action="Index">
+                    <i class="icon-settings"></i>
+                    <span>تنظیمات فروشگاه</span>
+                </a>
+            </li>
+
+            <li>
+                <form asp-controller="Auth" asp-action="LogOut" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="btn btn-link">
+                        <i class="icon-power"></i>
+                        خروج از حساب کاربری
+                    </button>
+                </form>
+            </li>
+
+        </ul>
+    </div><!-- /.side-menu-container -->
+</div><!-- /#sidebar -->
+<!-- END SIDEBAR -->

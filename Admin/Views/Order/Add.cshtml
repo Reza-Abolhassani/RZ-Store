@@ -1,0 +1,160 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model OrderDto
+
+<style>
+    .category-page {
+        direction: rtl;
+        padding: 25px 15px;
+    }
+
+    .category-card {
+        max-width: 510px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+        overflow: hidden;
+    }
+
+    .category-card-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .category-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .category-card-body {
+        padding: 25px;
+    }
+
+    .category-field {
+        margin-bottom: 22px;
+    }
+
+        .category-field label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .category-field .form-control {
+            display: block;
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 9px 12px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+    .category-submit {
+        display: block;
+        width: 100%;
+        max-width: 215px;
+        min-height: 44px;
+        margin: 10px auto 0;
+        border: none;
+        border-radius: 7px;
+        background: #62bd96;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .category-submit:hover {
+            background: #4eaa83;
+        }
+
+    @@media (max-width: 576px) {
+        .category-card-body {
+            padding: 18px;
+        }
+
+        .category-card-header {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="category-page">
+    <div class="category-card">
+
+        <div class="category-card-header">
+            <h3>
+                <i class="icon-shopping-cart"></i>
+                ثبت سفارش جدید
+            </h3>
+        </div>
+
+        <div class="category-card-body">
+
+            <form asp-controller="Order"
+                  asp-action="Add"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="category-field">
+                    <label asp-for="UserId">انتخاب مشتری</label>
+
+                    <select asp-for="UserId"
+                            class="form-control"
+                            asp-items="@(new SelectList(Model.Users, "Id", "PhoneNumber"))">
+
+                        <option value="">مشتری را انتخاب کنید</option>
+
+                    </select>
+
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Code">کد سفارش</label>
+
+                    <input asp-for="Code"
+                           class="form-control"
+                           placeholder="کد سفارش را وارد کنید" />
+
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="Shipping">روش ارسال</label>
+
+                    <input asp-for="Shipping"
+                           class="form-control"
+                           placeholder="مثلاً پست یا پیک" />
+
+                    <span asp-validation-for="Shipping" class="text-danger"></span>
+                </div>
+
+                <div class="category-field">
+                    <label asp-for="ShippingPrice">هزینه ارسال (تومان)</label>
+
+                    <input asp-for="ShippingPrice"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           placeholder="هزینه ارسال را وارد کنید" />
+
+                    <span asp-validation-for="ShippingPrice" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="category-submit">
+                    <i class="icon-check"></i>
+                    ثبت سفارش
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>

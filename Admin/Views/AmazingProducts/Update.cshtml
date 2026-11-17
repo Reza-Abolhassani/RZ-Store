@@ -1,0 +1,81 @@
+﻿@model Admin.Models.AmazingProductsDto
+
+@{
+    ViewData["Title"] = "ویرایش محصول شگفت انگیز";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>ویرایش محصول شگفت انگیز</h5>
+        </div>
+
+        <div class="card-body">
+            <form asp-controller="AmazingProducts"
+                  asp-action="Update"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ProductId">انتخاب محصول</label>
+
+                    <select asp-for="ProductId"
+                            class="form-control"
+                            required>
+
+                        <option value="">انتخاب کنید</option>
+
+                        @if (Model.Products != null)
+                        {
+                            foreach (var item in Model.Products)
+                            {
+                                <option value="@item.Id">
+                                    @item.Title - @item.Total.ToString("N0")
+                                </option>
+                            }
+                        }
+                    </select>
+
+                    <span asp-validation-for="ProductId"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="DiscountPercent">درصد تخفیف</label>
+
+                    <input asp-for="DiscountPercent"
+                           type="number"
+                           class="form-control"
+                           min="0"
+                           max="100"
+                           required />
+
+                    <span asp-validation-for="DiscountPercent"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        ذخیره تغییرات
+                    </button>
+
+                    <a asp-controller="AmazingProducts"
+                       asp-action="List"
+                       class="btn btn-secondary">
+                        بازگشت
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

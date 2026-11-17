@@ -1,0 +1,153 @@
+﻿@model UserDto
+
+@section style {
+
+    <!-- BEGIN PAGE CSS -->
+    <link href="/assets/plugins/select2/dist/css/select2.min.css" rel="stylesheet">
+    <!-- END PAGE CSS -->
+
+    <style>
+        #sidebar .user-box img.sidebar-profile-image {
+            width: 80px !important;
+            height: 80px !important;
+            max-width: 80px !important;
+            max-height: 80px !important;
+            object-fit: cover !important;
+            border-radius: 50% !important;
+            display: block !important;
+            margin: 0 auto !important;
+        }
+    </style>
+}
+
+@section script {
+    <!-- BEGIN PAGE JAVASCRIPT -->
+    <script src="/assets/plugins/select2/dist/js/select2.full.min.js"></script>
+    <script src="/assets/plugins/select2/dist/js/i18n/fa.js"></script>
+    <script src="/assets/plugins/jquery-mask/jquery.mask.min.js"></script>
+    <script src="/assets/js/pages/edit-profile.js"></script>
+    <!-- END PAGE JAVASCRIPT -->
+}
+
+
+
+<div class="col-12">
+    <div class="portlet box shadow">
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-note"></i>
+                    ویرایش پروفایل
+                </h3>
+            </div><!-- /.portlet-title -->
+
+        </div><!-- /.portlet-heading -->
+
+        <div class="portlet-body edit-form">
+
+            <div class="row">
+                <div class="col-lg-6 col-md-10 m-auto m-b-30">
+
+                    <form id="form" role="form" method="POST" enctype="multipart/form-data">
+
+                        <div class="text-center">
+                            <div class="user-box">
+                                <a href="@Model.ImageUrl" target="_blank">
+                                    <img id="profileImage" src="@Model.ImageUrl" alt="عکس پروفایل" class="img-circle img-responsive">
+                                </a>
+                                <div class="user-details">
+                                    <h4>نام کاربری</h4>
+
+                                </div><!-- /.user-details -->
+                            </div><!-- /.user-box -->
+                        </div><!-- /.text-center -->
+                        <div class="form-group relative mt-3 mb-4">
+                            <input type="file" class="form-control" asp-for="ImageFile">
+                            <div class="input-group round">
+                                <input type="text" class="form-control file-input" placeholder="برای آپلود کلیک کنید">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success">
+                                        <i class="icon-picture"></i>
+                                        آپلود عکس
+                                    </button>
+                                </span>
+                            </div><!-- /.input-group -->
+                            <div class="help-block"></div>
+                        </div><!-- /.form-group -->
+                        <hr>
+                        <div class="form-body">
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="txt-firstname">نام</label>
+                                        <div class="input-group round">
+                                            <span class="input-group-addon">
+                                                <i class="icon-user"></i>
+                                            </span>
+                                            <input type="text" asp-for="FirstName" class="form-control">
+                                        </div><!-- /.input-group -->
+                                    </div><!-- /.form-group -->
+                                </div><!-- /.col -->
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="txt-lastname">نام خانوادگی</label>
+                                        <div class="input-group round">
+                                            <span class="input-group-addon">
+                                                <i class="icon-user"></i>
+                                            </span>
+                                            <input type="text" asp-for="LastName" class="form-control">
+                                        </div><!-- /.input-group -->
+                                    </div><!-- /.form-group -->
+                                </div><!-- /.col -->
+                            </div><!-- /.row -->
+
+                            <div class="form-group">
+                                <label for="txt-mobile">موبایل</label>
+                                <div class="input-group round">
+                                    <span class="input-group-addon">
+                                        <i class="icon-screen-smartphone"></i>
+                                    </span>
+                                    <input type="text" asp-for="PhoneNumber" class="form-control ltr text-left mobile">
+                                </div><!-- /.input-group -->
+                            </div><!-- /.form-group -->
+
+                            <div class="form-group">
+                                <label for="txt-email">ایمیل</label>
+                                <div class="input-group round">
+                                    <span class="input-group-addon">
+                                        <i class="icon-envelope"></i>
+                                    </span>
+                                    <input type="email" asp-for="Email" class="form-control ltr text-left">
+                                </div><!-- /.input-group -->
+                            </div><!-- /.form-group -->
+
+                        </div><!-- /.form-body -->
+
+
+
+
+
+                        <div class="form-actions">
+                            <button type="submit"
+                                    class="btn btn-success btn-round">
+                                <i class="icon-check"></i>
+                                ذخیره تغییرات
+                            </button>
+
+                            <a asp-action="Index"
+                               asp-controller="Home"
+                               class="btn btn-warning btn-round float-end">
+                                <i class="icon-close"></i>
+                                بازگشت
+                            </a>
+                        </div>
+
+
+
+                    </form>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.portlet-body -->
+    </div><!-- /.portlet -->
+</div><!-- /.col-12 --> 

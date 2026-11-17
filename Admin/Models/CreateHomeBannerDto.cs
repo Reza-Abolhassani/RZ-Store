@@ -1,0 +1,19 @@
+﻿using Entities;
+using Microsoft.AspNetCore.Http;
+using WebFramework.Api;
+
+namespace Admin.Models
+{
+    public class CreateHomeBannerDto : BaseDto<CreateHomeBannerDto, HomeBanner>
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
+        public string Link { get; set; }
+        public string ButtonText { get; set; }
+        public int Position { get; set; }
+        public int Order { get; set; }
+        public bool IsActive { get; set; }
+    }
+}

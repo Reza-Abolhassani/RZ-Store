@@ -1,0 +1,251 @@
+﻿@model Admin.Models.ReportDto
+
+@section style {
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+}
+
+@section script {
+    <script src="/assets/plugins/data-table/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/DataTables-1.10.16/js/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/Buttons-1.5.6/js/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/Buttons-1.5.6/js/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/JSZip-2.5.0/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/pdfmake-0.1.36/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/pdfmake-0.1.36/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/fa.json"></script>
+    <script src="/assets/js/datatable-export.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            if ($.fn.DataTable) {
+
+                $('#orders-table').DataTable({
+                    language: {
+                        url: '/assets/plugins/data-table/fa.json'
+                    },
+                    pageLength: 10,
+                    ordering: true,
+                    searching: true
+                });
+
+                $('#products-table').DataTable({
+                    language: {
+                        url: '/assets/plugins/data-table/fa.json'
+                    },
+                    pageLength: 10,
+                    ordering: true,
+                    searching: true
+                });
+
+            }
+
+        });
+    </script>
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-chart"></i>
+                    گزارشات فروشگاه R & Z
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            @* آمار کلی *@
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="alert alert-info">
+                        <h4>کل سفارشات</h4>
+                        <h3>@Model.TotalOrders</h3>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="alert alert-success">
+                        <h4>پرداخت‌شده</h4>
+                        <h3>@Model.PaidOrders</h3>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="alert alert-warning">
+                        <h4>پرداخت‌نشده</h4>
+                        <h3>@Model.UnpaidOrders</h3>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="alert alert-primary">
+                        <h4>مجموع فروش</h4>
+                        <h3>@Model.TotalSales.ToString("N0")</h3>
+                        <span>تومان</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="alert alert-info">
+                        <strong>مجموع تخفیف سفارش‌های پرداخت‌شده:</strong>
+                        @Model.TotalDiscount.ToString("N0") تومان
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* جدول سفارش‌های اخیر *@
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-list"></i>
+                    جدول سفارش‌های اخیر
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped"
+                       id="orders-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>کد سفارش</th>
+                            <th>نام مشتری</th>
+                            <th>مبلغ نهایی</th>
+                            <th>وضعیت پرداخت</th>
+                            <th>تاریخ ثبت</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.RecentOrders != null && Model.RecentOrders.Any())
+                        {
+                            var row = 1;
+
+                            foreach (var item in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td>@row</td>
+                                    <td>@item.Code</td>
+                                    <td>@item.CustomerName</td>
+                                    <td>@item.Total.ToString("N0") تومان</td>
+
+                                    <td>
+                                        @if (item.IsPaid)
+                                        {
+                                            <span class="label label-success">
+                                                پرداخت‌شده
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="label label-warning">
+                                                پرداخت‌نشده
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @item.CreationDateTime.ToString("yyyy/MM/dd")
+                                    </td>
+                                </tr>
+
+                                row++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    سفارشی برای نمایش وجود ندارد.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* جدول محصولات پرفروش *@
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-list"></i>
+                    جدول محصولات پرفروش
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped"
+                       id="products-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام محصول</th>
+                            <th>تعداد فروش</th>
+                            <th>مجموع مبلغ فروش</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.TopProducts != null && Model.TopProducts.Any())
+                        {
+                            var row = 1;
+
+                            foreach (var item in Model.TopProducts)
+                            {
+                                <tr>
+                                    <td>@row</td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.Count</td>
+                                    <td>@item.TotalSales.ToString("N0") تومان</td>
+                                </tr>
+
+                                row++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    محصول فروخته‌شده‌ای وجود ندارد.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

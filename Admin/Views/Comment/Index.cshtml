@@ -1,0 +1,174 @@
+﻿@model List<CommentDto>
+
+@section style {
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+
+    <style>
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+            .comment-actions .btn {
+                min-width: 75px;
+                height: 34px;
+                padding: 6px 10px;
+                font-size: 12px;
+                text-align: center;
+            }
+    </style>
+}
+
+@section script {
+    <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/pdfmake.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/vfs_fonts-iransans.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
+    <script src="/assets/plugins/data-table/js/export/fa.json"></script>
+    <script src="/assets/js/pages/datatable-export.js"></script>
+}
+
+<div class="col-lg-12">
+    <div class="portlet box shadow">
+
+        <div class="portlet-heading">
+            <div class="portlet-title">
+                <h3 class="title">
+                    <i class="icon-frane"></i>
+                    جدول نظرات کاربران
+                </h3>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+
+            <div class="mb-3">
+                <a asp-controller="Comment"
+                   asp-action="Pending"
+                   class="btn btn-warning">
+                    نظرات در انتظار بررسی
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped"
+                       id="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام کاربر</th>
+                            <th>محصول</th>
+                            <th>متن نظر</th>
+                            <th>تاریخ ثبت</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@item.AuthorName</td>
+                                <td>@item.ProductsName</td>
+                                <td>@item.Content</td>
+                                <td>@item.CreationDateTime.ToString("yyyy/MM/dd")</td>
+
+                                <td>
+                                    @if (item.Status == Entities.Constants.CommentStatus.Approved)
+                                    {
+                                        <span class="label label-success">تأیید شده</span>
+                                    }
+                                    else if (item.Status == Entities.Constants.CommentStatus.Pending)
+                                    {
+                                        <span class="label label-warning">در انتظار بررسی</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-danger">رد شده</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-info"
+                                       style="width:80px; height:34px; padding:6px;">
+                                        جزئیات
+                                    </a>
+
+                                    @if (item.Status != Entities.Constants.CommentStatus.Approved)
+                                    {
+                                        <form asp-action="Confirm"
+                                              method="post"
+                                              style="display:inline-block;">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden" name="id" value="@item.Id" />
+
+                                            <button type="submit"
+                                                    class="btn btn-success"
+                                                    style="width:80px; height:34px; padding:6px;">
+                                                تأیید
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (item.Status != Entities.Constants.CommentStatus.Rejected)
+                                    {
+                                        <form asp-action="Reject"
+                                              method="post"
+                                              style="display:inline-block;">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden" name="id" value="@item.Id" />
+
+                                            <button type="submit"
+                                                    class="btn btn-warning"
+                                                    style="width:80px; height:34px; padding:6px;">
+                                                رد نظر
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <form asp-action="Delete"
+                                          method="post"
+                                          style="display:inline-block;"
+                                          onsubmit="return confirm('آیا از حذف این نظر مطمئن هستید؟')">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="id" value="@item.Id" />
+
+                                        <button type="submit"
+                                                class="btn btn-danger"
+                                                style="width:80px; height:34px; padding:6px;">
+                                            حذف
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                            i++;
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
