@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class BlogDto : BaseDto<BlogDto, Blog>
     {

@@ -32,8 +32,13 @@ namespace Admin.Models
     public class TopProductDto
     {
         public Guid ProductId { get; set; }
+
         public string ProductName { get; set; }
+
+        public string ImageUrl { get; set; }
+
         public int Count { get; set; }
+
         public long TotalSales { get; set; }
     }
 }

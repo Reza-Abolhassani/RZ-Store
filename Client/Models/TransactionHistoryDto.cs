@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Transactions;
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class TransactionHistoryDto : BaseDto<TransactionHistoryDto,TransactionHistory>
     {

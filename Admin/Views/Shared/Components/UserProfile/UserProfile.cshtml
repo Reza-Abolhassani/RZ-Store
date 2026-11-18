@@ -82,10 +82,14 @@
                         </li>
 
                         <li>
-                            <a href="/Auth/LogOut">
-                                <i class="icon-power"></i>
-                                خروج
-                            </a>
+                            <form asp-controller="Auth" asp-action="LogOut" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" style="background:none; border:none; cursor:pointer;">
+                                    <i class="icon-power"></i>
+                                    خروج
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </li>

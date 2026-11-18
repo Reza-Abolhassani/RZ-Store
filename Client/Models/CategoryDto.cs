@@ -5,7 +5,7 @@ using System;
 
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class CategoryDto : BaseDto<CategoryDto, Category>
     {

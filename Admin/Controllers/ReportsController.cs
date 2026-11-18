@@ -82,11 +82,16 @@ namespace Admin.Controllers
                         ? "محصول حذف‌شده"
                         : x.Product.Title
                 })
+
                 .Select(g => new TopProductDto
                 {
                     ProductId = g.Key.ProductId,
 
                     ProductName = g.Key.ProductName,
+
+                    ImageUrl = g.First().Product == null
+        ? null
+        : g.First().Product.ImageUrl,
 
                     Count = g.Sum(x => x.Count),
 

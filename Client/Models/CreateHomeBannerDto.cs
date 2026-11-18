@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class CreateHomeBannerDto : BaseDto<CreateHomeBannerDto, HomeBanner>
     {

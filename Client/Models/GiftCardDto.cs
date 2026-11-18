@@ -2,7 +2,7 @@
 using System;
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class GiftCardDto : BaseDto<GiftCardDto, GiftCard>
     {

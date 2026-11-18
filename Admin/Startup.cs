@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+
 using System;
 
 using WebFramework.Configuration;
@@ -103,6 +106,15 @@ namespace Admin
             app.UseHsts(env);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            var sharedImagesPath = Path.GetFullPath(Path.Combine(env.ContentRootPath, "..", "SharedImages"));
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(sharedImagesPath),
+                RequestPath = "/images"
+            });
+
             app.UseNToastNotify();
             app.UseRouting();
             app.UseCors();

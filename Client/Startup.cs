@@ -10,13 +10,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+
 using System;
 
 using WebFramework.Configuration;
 using WebFramework.CustomMapping;
 using WebFramework.Swagger;
 
-namespace Admin
+namespace Client
 {
     public class Startup
     {
@@ -102,6 +105,19 @@ namespace Admin
             app.InitializeDatabase();
             app.UseHsts(env);
             app.UseHttpsRedirection();
+
+            // مسیر پوشه مشترک تصاویر
+            var sharedImagesPath = Path.GetFullPath(
+                Path.Combine(env.ContentRootPath, "..", "SharedImages")
+            );
+
+            // دسترسی به تصاویر مشترک
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(sharedImagesPath),
+                RequestPath = "/images"
+            });
+
             app.UseStaticFiles();
             app.UseNToastNotify();
             app.UseRouting();

@@ -12,6 +12,8 @@ using NToastNotify;
 using System;
 using System.Threading.Tasks;
 
+using System.IO;
+
 namespace Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -23,6 +25,11 @@ namespace Admin.Controllers
         private readonly IToastNotification notification;
 
         private readonly IWebHostEnvironment environment;
+
+        private string SharedImagesPath =>
+    Path.GetFullPath(
+        Path.Combine(environment.ContentRootPath, "..", "SharedImages")
+    );
 
         public ProductController(IRepository<Product> productRepo, IRepository<Category> categoryRepo, IMapper mapper, IToastNotification notification, IWebHostEnvironment environment)
         {
@@ -52,7 +59,7 @@ namespace Admin.Controllers
             {
                 //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImages");
 
-                model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImage", environment.WebRootPath);
+                model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImage", SharedImagesPath);
             }
 
             model.CreationDateTime = DateTime.Now;
@@ -123,9 +130,7 @@ namespace Admin.Controllers
                 // بررسی و ذخیره تصویر جدید
                 if (dto.ImageFile != null)
                 {
-                    //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImage");
-
-                    model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImage", environment.WebRootPath);
+                    model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImage", SharedImagesPath);
                 }
 
                 // به‌روزرسانی محصول

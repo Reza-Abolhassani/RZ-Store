@@ -424,7 +424,7 @@ namespace Admin.Controllers
             {
                 finduser.ImageUrl = FileTool.SaveFile(
                     dto.ImageFile,
-                    "Userimage",
+                    "UserImages",
                     environment.WebRootPath
                 );
             }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using WebFramework.Api;
 using Entities;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class CityDto : BaseDto<CityDto, Entities.City>
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class DiscountDto : BaseDto<DiscountDto, Discount>, IValidatableObject
     {

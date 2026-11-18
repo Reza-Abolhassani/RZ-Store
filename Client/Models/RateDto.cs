@@ -1,7 +1,7 @@
 ﻿using Entities;
 using WebFramework.Api;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class RateDto : BaseDto<RateDto, Rate>
     {

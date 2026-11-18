@@ -4,7 +4,7 @@ using System;
 
 using WebFramework.Api;
 
-namespace Admin.Models.Payments
+namespace Client.Models.Payments
 {
     public class PaymentLogDto : BaseDto<PaymentLogDto, PaymentLog>
     {

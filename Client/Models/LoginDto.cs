@@ -1,4 +1,4 @@
-﻿namespace Admin.Models
+﻿namespace Client.Models
 {
     public class LoginDto
     {

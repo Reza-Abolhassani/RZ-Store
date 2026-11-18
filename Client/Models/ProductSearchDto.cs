@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Admin.Models
+namespace Client.Models
 {
     public class ProductSearchDto
     {
