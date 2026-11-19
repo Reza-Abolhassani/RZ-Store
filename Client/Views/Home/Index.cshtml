@@ -127,8 +127,15 @@
                         
                     </ul>
                     <div class="shop-image position-relative overflow-hidden rounded shadow">
-                            <a href="shop-product-detail.html"><img src="@item.ImageUrl" class="img-fluid" alt="@item.Title"></a>
-                        <a href="shop-product-detail.html" class="overlay-work">
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id">
+                                <img src="@item.ImageUrl" class="img-fluid" alt="@item.Title">
+                            </a>
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id"
+                               class="overlay-work">
                                 <img src="@item.ImageUrl" class="img-fluid" alt="@item.Title">
                         </a>
                         <ul class="list-unstyled shop-icons">
@@ -138,7 +145,12 @@
                         </ul>
                     </div>
                     <div class="card-body content pt-4 p-2">
-                        <a href="shop-product-detail.html" class="text-dark product-name h6">@item.Title </a>
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id"
+                               class="text-dark product-name h6">
+                                @item.Title
+                            </a>
                         <div class="d-flex justify-content-between mt-1">
                                 <h6 class="text-muted small fst-italic mb-0 mt-1">
 
@@ -217,12 +229,17 @@
                         <li><a href="javascript:void(0)" class="badge badge-link rounded-pill bg-info">محبوب </a></li>
                     </ul>
                     <div class="shop-image position-relative overflow-hidden rounded shadow">
-                            <a href="shop-product-detail.html">
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id">
                                 <img src="@item.ImageUrl"
                                      class="img-fluid"
                                      alt="@item.Title">
                             </a>
-                        <a href="shop-product-detail.html" class="overlay-work">
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id"
+                               class="overlay-work">
                                 <img src="@item.ImageUrl"
                                      class="img-fluid"
                                      alt="@item.Title">
@@ -234,7 +251,12 @@
                         </ul>
                     </div>
                     <div class="card-body content pt-4 p-2">
-                        <a href="shop-product-detail.html" class="text-dark product-name h6">@item.Title </a>
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id"
+                               class="text-dark product-name h6">
+                                @item.Title
+                            </a>
                         <div class="d-flex justify-content-between mt-1">
 
                                 <h6 class="text-muted small fst-italic mb-0 mt-1">
@@ -297,8 +319,17 @@
                             <li><a href="javascript:void(0)" class="badge badge-link rounded-pill bg-primary">قیمت مناسب </a></li>
                     </ul>
                     <div class="shop-image position-relative overflow-hidden rounded shadow">
-                            <a href="shop-product-detail.html"><img src="@item.ImageUrl" class="img-fluid" alt="@item.Title"></a>
-                        <a href="shop-product-detail.html" class="overlay-work">
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id">
+                                <img src="@item.ImageUrl"
+                                     class="img-fluid"
+                                     alt="@item.Title">
+                            </a>
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id"
+                               class="overlay-work">
                                 <img src="@item.ImageUrl" class="img-fluid" alt="@item.Title">
                         </a>
                         <ul class="list-unstyled shop-icons">
@@ -308,7 +339,12 @@
                         </ul>
                     </div>
                     <div class="card-body content pt-4 p-2">
-                        <a href="shop-product-detail.html" class="text-dark product-name h6">@item.Title  </a>
+                            <a asp-controller="Product"
+                               asp-action="ProductDetail"
+                               asp-route-Id="@item.Id"
+                               class="text-dark product-name h6">
+                                @item.Title
+                            </a>
                         <div class="d-flex justify-content-between mt-1">
                                 <h6 class="text-muted small fst-italic mb-0 mt-1">
                                     @item.Total.ToString("N0") تومان

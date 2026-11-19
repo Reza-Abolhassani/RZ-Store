@@ -127,8 +127,11 @@ namespace Client
             app.UseElmahCore(_siteSetting);
             app.UseEndpoints(config =>
             {
-                config.MapControllers().RequireAuthorization();
-                config.MapDefaultControllerRoute().RequireAuthorization();
+                //config.MapControllers().RequireAuthorization();
+                //config.MapDefaultControllerRoute().RequireAuthorization();
+
+                config.MapControllers();
+                config.MapDefaultControllerRoute();
             });
         }
     }
