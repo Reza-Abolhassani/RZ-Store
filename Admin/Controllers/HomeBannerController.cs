@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using NToastNotify;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,16 +26,25 @@ namespace Admin.Controllers
         private readonly IToastNotification notification;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+        private readonly IWebHostEnvironment environment;
+
+        private string SharedImagesPath =>
+    Path.GetFullPath(
+        Path.Combine(environment.ContentRootPath, "..", "SharedImages")
+    );
+
         public HomeBannerController(
             IRepository<HomeBanner> homeBannerRepo,
             IMapper mapper,
             IToastNotification notification,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment,
+            IWebHostEnvironment environment)
         {
             HomeBannerRepo = homeBannerRepo;
             this.mapper = mapper;
             this.notification = notification;
             _webHostEnvironment = webHostEnvironment;
+            this.environment = environment;
         }
 
         // Add - Get
@@ -51,9 +62,13 @@ namespace Admin.Controllers
 
             var model = dto.ToEntity(mapper);
 
-            if (dto.ImageFile != null)
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
-                model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "HomeBannerImage", _webHostEnvironment.WebRootPath);
+                model.ImageUrl = FileTool.SaveFile(
+                    dto.ImageFile,
+                    "HomeBannerImage",
+                    SharedImagesPath
+                );
             }
 
             HomeBannerRepo.Add(model);
@@ -110,12 +125,12 @@ namespace Admin.Controllers
             model.Order = dto.Order;
             model.IsActive = dto.IsActive;
 
-            if (dto.ImageFile != null)
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
                 model.ImageUrl = FileTool.SaveFile(
                     dto.ImageFile,
                     "HomeBannerImage",
-                    _webHostEnvironment.WebRootPath
+                    SharedImagesPath
                 );
             }
 

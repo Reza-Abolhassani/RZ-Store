@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,6 +31,12 @@ namespace Admin.Controllers
         private readonly IRepository<TransactionHistory> transactionHistoryRepo;
 
         private readonly IWebHostEnvironment environment;
+
+
+        private string SharedImagesPath =>
+    Path.GetFullPath(
+        Path.Combine(environment.ContentRootPath, "..", "SharedImages")
+    );
 
         public UserController(UserManager<User> userManager, IToastNotification notification, IMapper mapper, IRepository<UserWallet> userWalletRepo, IRepository<TransactionHistory> transactionHistoryRepo, IWebHostEnvironment environment)
         {
@@ -56,12 +63,13 @@ namespace Admin.Controllers
             var model = dto.ToEntity(mapper);
 
             // ذخیره تصویر کاربر
-            if (dto.ImageFile != null)
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
                 model.ImageUrl = FileTool.SaveFile(
                     dto.ImageFile,
                     "UserImages",
-                    environment.WebRootPath);
+                    SharedImagesPath
+                );
             }
 
             // ساخت کاربر
@@ -200,12 +208,13 @@ namespace Admin.Controllers
             model.IsActive = dto.IsActive;
 
             // ذخیره تصویر جدید
-            if (dto.ImageFile != null)
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
                 model.ImageUrl = FileTool.SaveFile(
                     dto.ImageFile,
                     "UserImages",
-                    environment.WebRootPath);
+                    SharedImagesPath
+                );
             }
 
             // ذخیره تغییرات اطلاعات کاربر
@@ -420,12 +429,12 @@ namespace Admin.Controllers
             finduser.Email = dto.Email;
             finduser.PhoneNumber = dto.PhoneNumber;
 
-            if (dto.ImageFile != null)
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
             {
                 finduser.ImageUrl = FileTool.SaveFile(
                     dto.ImageFile,
                     "UserImages",
-                    environment.WebRootPath
+                    SharedImagesPath
                 );
             }
 

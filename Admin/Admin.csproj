@@ -44,9 +44,6 @@
     <Folder Include="wwwroot\assets\plugins\noty\js\noty\layouts\" />
     <Folder Include="wwwroot\assets\plugins\noty\js\noty\themes\" />
     <Folder Include="wwwroot\assets\plugins\paper-ripple\dist\systemjs\" />
-    <Folder Include="wwwroot\images\CategoryImage\" />
-    <Folder Include="wwwroot\images\BlogImage\" />
-    <Folder Include="wwwroot\images\ProductImage\" />
   </ItemGroup>
 
 </Project>

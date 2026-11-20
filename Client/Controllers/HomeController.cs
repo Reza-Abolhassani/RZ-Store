@@ -34,7 +34,7 @@ namespace Client.Controllers
             var model = new IndexDto();
 
             model.HomeBanners = await HomeBannerRepo.TableNoTracking
-            .Where(x => x.Active)//فقط بنرهای فعال را دریافت می‌کند.
+            .Where(x => x.IsActive)//فقط بنرهای فعال را دریافت می‌کند.
             .OrderBy(x => x.Position)//ابتدا بنرهای موقعیت اول را قرار می‌دهد.
             .ThenBy(x => x.Order)//سپس بنرهای موقعیت دوم را قرار می‌دهد.
             .ProjectTo<HomeBannerDto>(mapper.ConfigurationProvider)

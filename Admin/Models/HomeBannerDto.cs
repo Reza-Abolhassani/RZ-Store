@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using WebFramework.Api;
 
 namespace Admin.Models
@@ -13,5 +14,6 @@ namespace Admin.Models
         public int Position { get; set; }
         public int Order { get; set; }
         public bool IsActive { get; set; }
+        public IFormFile ImageFile { get; set; }
     }
 }
