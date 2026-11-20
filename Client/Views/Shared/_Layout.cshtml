@@ -150,18 +150,65 @@
                     <li class="list-inline-item mb-0 pe-1">
                         <a href="#" class="btn btn-icon btn-primary" data-bs-toggle="modal" data-bs-target="#wishlist"><i class="uil uil-heart align-middle icons"></i></a>
                     </li>
+                    
                     <li class="list-inline-item mb-0">
                         <div class="dropdown dropdown-primary">
-                            <button type="button" class="btn btn-icon btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="uil uil-user align-middle icons"></i></button>
-                            <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 py-3" style="width: 200px;">
-                                <a class="dropdown-item text-dark" href="#"><i class="uil uil-user align-middle me-1"></i> حساب کاربری</a>
-                                <a class="dropdown-item text-dark" href="#"><i class="uil uil-clipboard-notes align-middle me-1"></i> سفارشات من </a>
-                                <a class="dropdown-item text-dark" href="#"><i class="uil uil-arrow-circle-down align-middle me-1"></i> دانلود ها </a>
-                                <div class="dropdown-divider my-3 border-top"></div>
-                                <a class="dropdown-item text-dark" href="#"><i class="uil uil-sign-out-alt align-middle me-1"></i> خروج </a>
+
+                            <button type="button"
+                                    class="btn btn-icon btn-primary dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                <i class="uil uil-user align-middle icons"></i>
+                            </button>
+
+                            <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 py-3"
+                                 style="width: 200px;">
+
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <span class="dropdown-item text-muted">
+                                        <i class="uil uil-user align-middle me-1"></i>
+                                        حساب کاربری
+                                    </span>
+
+                                    <div class="dropdown-divider my-2 border-top"></div>
+
+                                    <form asp-controller="Auth"
+                                          asp-action="Logout"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="dropdown-item text-dark border-0 bg-transparent w-100 text-start">
+                                            <i class="uil uil-sign-out-alt align-middle me-1"></i>
+                                            خروج از حساب کاربری
+                                        </button>
+
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a class="dropdown-item text-dark"
+                                       asp-controller="Auth"
+                                       asp-action="Login">
+                                        <i class="uil uil-sign-in-alt align-middle me-1"></i>
+                                        ورود به حساب کاربری
+                                    </a>
+
+                                    <a class="dropdown-item text-dark"
+                                       asp-controller="Auth"
+                                       asp-action="Register">
+                                        <i class="uil uil-user-plus align-middle me-1"></i>
+                                        ثبت‌نام
+                                    </a>
+                                }
+
                             </div>
                         </div>
                     </li>
+
                 </ul><!--end login button-->
 
             </div>

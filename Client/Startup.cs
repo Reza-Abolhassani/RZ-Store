@@ -35,6 +35,9 @@ namespace Client
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
+
+            services.AddSmsSender(_siteSetting);
+
             services.AddCors(options => options.AddDefaultPolicy(builder =>
             {
                 builder.AllowAnyHeader().AllowAnyMethod();

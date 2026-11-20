@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <DocumentationFile>MyApi.xml</DocumentationFile>
+    <UserSecretsId>bdba097e-c9c4-4489-8bf1-b2e35402b3c1</UserSecretsId>
   </PropertyGroup>
 
 

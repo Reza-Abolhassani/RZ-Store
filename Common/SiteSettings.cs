@@ -10,6 +10,8 @@
         public DatabaseSettings DatabaseSettings { get; set; }
         public DataSeedSettings DataSeedSettings { get; set; }
         public SmsSettings SmsSettings { get; set; }
+
+        public string OtpHashKey { get; set; }
     }
 
     public class CorsSettings

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Common.Sms
 {
-    public interface ISmsSender : IScopedDependency
+    public interface ISmsSender
     {
         Task<OtpSendResult> SendOtpAsync(string to, CancellationToken cancellationToken = default);
         Task<string> SendSharedAsync(string to, string[] args, int bodyId, CancellationToken cancellationToken = default);
