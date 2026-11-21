@@ -11,6 +11,8 @@ namespace Common.Security
             if (string.IsNullOrWhiteSpace(secretKey))
                 throw new InvalidOperationException("OTP hash key is not configured.");
 
+           
+
             using var hmac = new HMACSHA256(
                 Convert.FromBase64String(secretKey));
 

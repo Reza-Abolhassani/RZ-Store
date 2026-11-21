@@ -436,6 +436,173 @@ namespace Client.Controllers
             });
         }
 
+        // نمایش صفحه فراموشی رمز عبور
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // درخواست کد تأیید برای تغییر رمز عبور
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RequestPasswordResetOtp(
+            RequestOtpDto model,
+            CancellationToken cancellationToken)
+        {
+            if (model == null ||
+                string.IsNullOrWhiteSpace(model.PhoneNumber))
+            {
+                return Json(new
+                {
+                    succeeded = false,
+                    message = "شماره موبایل را وارد کنید."
+                });
+            }
+
+            var phoneNumber = model.PhoneNumber.Trim();
+
+            // بررسی معتبر بودن شماره موبایل
+            if (!System.Text.RegularExpressions.Regex.IsMatch(
+                phoneNumber, @"^09\d{9}$"))
+            {
+                return Json(new
+                {
+                    succeeded = false,
+                    message = "شماره موبایل معتبر نیست."
+                });
+            }
+
+            // پیدا کردن کاربر
+            var user = await userManager.FindByNameAsync(phoneNumber);
+
+            // فقط کاربران موجود و فعال اجازه بازیابی رمز دارند
+            if (user == null || !user.IsActive)
+            {
+                return Json(new
+                {
+                    succeeded = true,
+                    message = "در صورت وجود حساب فعال، کد تأیید برای شما ارسال خواهد شد."
+                });
+            }
+
+            var requestIp =
+                HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            // ایجاد و ذخیره کد تأیید
+            var result = await otpService.SendOtpAsync(
+                phoneNumber,
+                requestIp,
+                cancellationToken);
+
+            return Json(new
+            {
+                succeeded = result.Succeeded,
+                message = result.Succeeded
+                    ? "درخواست کد تأیید ثبت شد."
+                    : result.Message
+            });
+        }
+
+
+        // تأیید کد OTP و تغییر رمز عبور
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(
+            ForgotPasswordDto model,
+            CancellationToken cancellationToken)
+        {
+            // 1. بررسی اطلاعات ارسالی
+            if (model == null)
+            {
+                return Json(new
+                {
+                    succeeded = false,
+                    message = "اطلاعات ارسالی معتبر نیست."
+                });
+            }
+
+            // 2. بررسی اعتبار مدل
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+
+                return Json(new
+                {
+                    succeeded = false,
+                    message = errors.FirstOrDefault()
+                        ?? "اطلاعات واردشده معتبر نیست."
+                });
+            }
+
+            var phoneNumber = model.PhoneNumber.Trim();
+
+            // 3. پیدا کردن کاربر
+            var user = await userManager.FindByNameAsync(phoneNumber);
+
+            if (user == null || !user.IsActive)
+            {
+                return Json(new
+                {
+                    succeeded = false,
+                    message = "اطلاعات بازیابی رمز عبور معتبر نیست."
+                });
+            }
+
+            // 4. بررسی کد تأیید
+            var otpResult = await otpService.VerifyOtpAsync(
+                phoneNumber,
+                model.Code,
+                cancellationToken);
+
+            if (!otpResult.Succeeded)
+            {
+                return Json(new
+                {
+                    succeeded = false,
+                    message = otpResult.Message
+                });
+            }
+
+            // 5. تولید توکن تغییر رمز عبور توسط Identity
+            var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            // 6. ثبت رمز عبور جدید
+            var resetResult = await userManager.ResetPasswordAsync(
+                user,
+                resetToken,
+                model.Password);
+
+            if (!resetResult.Succeeded)
+            {
+                var errors = resetResult.Errors
+                    .Select(x => x.Description)
+                    .ToList();
+
+                return Json(new
+                {
+                    succeeded = false,
+                    message = errors.FirstOrDefault()
+                        ?? "تغییر رمز عبور انجام نشد.",
+                    errors = errors
+                });
+            }
+
+            // 7. پاسخ موفقیت
+            return Json(new
+            {
+                succeeded = true,
+                message = "رمز عبور شما با موفقیت تغییر کرد.",
+                redirectUrl = Url.Action("Login", "Auth")
+            });
+        }
+
         // خروج کاربر
         [HttpPost]
         [Authorize]
