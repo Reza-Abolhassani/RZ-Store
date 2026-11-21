@@ -176,7 +176,8 @@
 
                                     <form asp-controller="Auth"
                                           asp-action="Logout"
-                                          method="post">
+                                          method="post"
+                                          onsubmit="return confirm('آیا از خروج از حساب کاربری خود اطمینان دارید؟');">
 
                                         @Html.AntiForgeryToken()
 
