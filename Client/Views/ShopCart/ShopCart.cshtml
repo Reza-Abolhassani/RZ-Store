@@ -5,23 +5,11 @@
 }
 
 <!-- Hero -->
-<section class="bg-half-170 d-table w-100"
-         style="background: url('/images/bg.jpg') center center;">
-    <div class="container">
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="title-heading">
-                    <h1 class="heading mb-3">سبد خرید</h1>
-                    <p class="text-muted">محصولات انتخاب شده توسط شما</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Shopping Cart -->
-<section class="section">
+<section class="section" style="padding-top: 150px;">
     <div class="container">
+
+        <h4 class="mb-4" style="font-size: 21px;">سبد خرید</h4>
 
         @if (Model.Items != null && Model.Items.Any())
         {
@@ -51,7 +39,7 @@
 
                                         <!-- حذف محصول و تصویر -->
                                         <td>
-                                            <div class="d-flex align-items-center">
+                                            <div class="d-flex align-items-center gap-3">
 
                                                 <form asp-controller="ShopCart"
                                                       asp-action="Remove"
@@ -65,7 +53,7 @@
                                                     <button type="submit"
                                                             class="btn btn-link text-danger p-0"
                                                             title="حذف محصول">
-                                                        <i class="uil uil-times-circle"></i>
+                                                        <i class="uil uil-trash-alt"></i>
                                                     </button>
 
                                                 </form>
@@ -158,17 +146,7 @@
                         </table>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-sm-6">
-                            <a asp-controller="Shop"
-                               asp-action="AllProduct"
-                               asp-route-t="0"
-                               class="btn btn-primary">
-                                <i class="uil uil-arrow-left"></i>
-                                خرید بیشتر
-                            </a>
-                        </div>
-                    </div>
+                    
 
                 </div>
 
