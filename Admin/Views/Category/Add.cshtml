@@ -155,7 +155,22 @@
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 
-                
+                <div class="category-field">
+                    <label asp-for="ParentId">دسته والد</label>
+
+                    <select asp-for="ParentId" class="form-control">
+                        <option value="">دسته اصلی (بدون والد)</option>
+
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <option value="@category.Id">@category.Title</option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="ParentId" class="text-danger"></span>
+                </div>
+
+
 
                 <div class="category-field">
                     <label asp-for="Description">توضیحات</label>

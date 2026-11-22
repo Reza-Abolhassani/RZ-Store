@@ -1,0 +1,334 @@
+﻿@model AllProductDto
+
+@{
+    Layout = "_Layout";
+
+    var products = Model?.products ?? new List<ProductDto>();
+    var categories = Model?.Categories ?? new List<CategoryDto>();
+
+    var searchText = Context.Request.Query["txt"].ToString();
+    var sortValue = Context.Request.Query["t"].ToString();
+
+    if (string.IsNullOrEmpty(sortValue))
+    {
+        sortValue = "0";
+    }
+}
+
+<style>
+    .products-page {
+        min-height: 60vh;
+        padding: 160px 0 40px;
+        direction: rtl;
+    }
+
+    .product-card {
+        height: 100%;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: 0.3s;
+        background: #fff;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 230px;
+            object-fit: contain;
+            padding: 15px;
+        }
+
+        .product-card .product-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .product-card .product-title {
+            font-size: 15px;
+            font-weight: 600;
+            min-height: 45px;
+            color: #333;
+        }
+
+    .product-price {
+        color: #2f55d4;
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .old-price {
+        color: #999;
+        text-decoration: line-through;
+        font-size: 13px;
+        margin-right: 8px;
+    }
+
+    .products-sidebar {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+        .products-sidebar a {
+            display: block;
+            padding: 8px 0;
+            color: #555;
+            text-decoration: none;
+        }
+
+            .products-sidebar a:hover {
+                color: #2f55d4;
+            }
+
+    .products-search {
+        display: flex;
+        gap: 8px;
+    }
+
+        .products-search input {
+            min-width: 0;
+        }
+</style>
+
+<section class="products-page">
+    <div class="container">
+
+        <!-- عنوان صفحه -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h3>فروشگاه محصولات</h3>
+                <p class="text-muted">
+                    محصولات فروشگاه R &amp; Z
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <!-- فیلترها و دسته بندی ها -->
+            <div class="col-lg-3 mb-4">
+
+                <div class="products-sidebar">
+
+                    <h5 class="mb-3">جستجوی محصول</h5>
+
+                    <form asp-controller="Shop"
+                          asp-action="AllProduct"
+                          method="get">
+
+                        <div class="products-search">
+                            <input type="text"
+                                   name="txt"
+                                   value="@searchText"
+                                   class="form-control"
+                                   placeholder="نام محصول..." />
+
+                            <input type="hidden"
+                                   name="t"
+                                   value="@sortValue" />
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                جستجو
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr />
+
+                    <h5 class="mb-3">دسته بندی محصولات</h5>
+
+                    <a asp-controller="Shop"
+                       asp-action="AllProduct">
+                        همه محصولات
+                    </a>
+
+                    @if (categories.Any())
+                    {
+                        foreach (var category in categories)
+                        {
+                            <a asp-controller="Shop"
+                               asp-action="ProductsByCategory"
+                               asp-route-categoryId="@category.Id">
+                                @category.Title
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted small">
+                            دسته بندی‌ای برای نمایش ارسال نشده است.
+                        </p>
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- لیست محصولات -->
+            <div class="col-lg-9">
+
+                <!-- مرتب سازی -->
+                <div class="d-flex justify-content-between
+                            align-items-center flex-wrap mb-4">
+
+                    <h5>لیست محصولات</h5>
+
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                        <span>مرتب سازی:</span>
+
+                        <label>
+                            <input type="radio"
+                                   name="sort"
+                                   value="0"
+                                   @(sortValue == "0" ? "checked" : "") />
+                            جدیدترین
+                        </label>
+
+                        <label>
+                            <input type="radio"
+                                   name="sort"
+                                   value="1"
+                                   @(sortValue == "1" ? "checked" : "") />
+                            گران‌ترین
+                        </label>
+
+                        <label>
+                            <input type="radio"
+                                   name="sort"
+                                   value="2"
+                                   @(sortValue == "2" ? "checked" : "") />
+                            ارزان‌ترین
+                        </label>
+
+                    </div>
+                </div>
+
+                <!-- کارت محصولات -->
+                <div class="row">
+
+                    @if (products.Any())
+                    {
+                        foreach (var item in products)
+                        {
+                            <div class="col-xl-4 col-md-6 col-12 mb-4">
+
+                                <div class="product-card">
+
+                                    <a asp-controller="Shop"
+                                       asp-action="ProductDetail"
+                                       asp-route-Id="@item.Id">
+
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl"
+                                                 alt="@item.Title" />
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex align-items-center
+                                                                    justify-content-center"
+                                                 style="height:230px;">
+                                                <span class="text-muted">
+                                                    تصویر محصول موجود نیست
+                                                </span>
+                                            </div>
+                                        }
+
+                                    </a>
+
+                                    <div class="product-info">
+
+                                        <a asp-controller="Shop"
+                                           asp-action="ProductDetail"
+                                           asp-route-Id="@item.Id"
+                                           class="text-decoration-none">
+
+                                            <h6 class="product-title">
+                                                @item.Title
+                                            </h6>
+
+                                        </a>
+
+                                        <div class="mt-3">
+
+                                            <span class="product-price">
+                                                @item.Total.ToString("N0")
+                                                تومان
+                                            </span>
+
+                                            @if (item.Discount > 0 &&
+                                                                                item.RawPrice > item.Total)
+                                            {
+                                                <span class="old-price">
+                                                    @item.RawPrice.ToString("N0")
+                                                </span>
+                                            }
+
+                                        </div>
+
+                                        <a asp-controller="Shop"
+                                           asp-action="ProductDetail"
+                                           asp-route-Id="@item.Id"
+                                           class="btn btn-primary btn-sm mt-3">
+                                            مشاهده محصول
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center py-5">
+
+                            <h5>محصولی یافت نشد!</h5>
+
+                            <p class="text-muted">
+                                در حال حاضر محصولی برای نمایش وجود ندارد.
+                            </p>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const sortRadios = document.querySelectorAll(
+            'input[name="sort"]'
+        );
+
+        sortRadios.forEach(function (radio) {
+
+            radio.addEventListener("change", function () {
+
+                const url = new URL(window.location.href);
+
+                url.searchParams.set("t", this.value);
+
+                window.location.href = url.toString();
+
+            });
+
+        });
+
+    });
+</script>

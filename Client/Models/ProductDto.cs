@@ -22,9 +22,14 @@ namespace Client.Models
         public Guid CategoryId { get; set; }
         public string CategoryTitle { get; set; }
         public List<CategoryDto> categories { get; set; }
+
+        public int ShopCartItemCount { get; set; }
+
+        public List<GalleryDto> galleries { get; set; }
         public ProductDto()
         {
             categories = new List<CategoryDto>();
+            galleries = new List<GalleryDto>();
         }
     }
 }

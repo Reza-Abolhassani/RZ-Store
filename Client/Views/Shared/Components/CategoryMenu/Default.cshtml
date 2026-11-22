@@ -1,0 +1,50 @@
+﻿@model List<Client.Models.CategoryDto>
+
+<li class="has-submenu parent-parent-menu-item">
+
+    
+
+    <a href="javascript:void(0)">
+        <i class="mdi mdi-layers-outline"></i>
+        دسته‌بندی‌ها
+    </a>
+    <span class="menu-arrow"></span>
+
+    <ul class="submenu">
+
+        @foreach (var category in Model)
+        {
+            <li class="has-submenu parent-menu-item">
+
+                <a asp-controller="Product"
+                   asp-action="CategoryProducts"
+                   asp-route-categoryId="@category.Id">
+                    @category.Title
+                </a>
+
+                @if (category.Children.Any())
+                {
+                    <span class="submenu-arrow"></span>
+
+                    <ul class="submenu">
+
+                        @foreach (var child in category.Children)
+                        {
+                            <li>
+                                <a asp-controller="Product"
+                                   asp-action="CategoryProducts"
+                                   asp-route-categoryId="@child.Id">
+                                    @child.Title
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+                }
+
+            </li>
+        }
+
+    </ul>
+
+</li>

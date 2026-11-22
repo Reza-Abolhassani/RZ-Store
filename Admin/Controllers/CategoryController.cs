@@ -10,8 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+
+
+
 
 namespace Admin.Controllers
 {
@@ -24,7 +29,18 @@ namespace Admin.Controllers
 
         private readonly IWebHostEnvironment environment;
 
-        public CategoryController(IRepository<Category> categoryRepo, IMapper mapper, IToastNotification notification, IWebHostEnvironment environment)
+
+
+        private string SharedImagesPath =>
+    Path.GetFullPath(
+        Path.Combine(environment.ContentRootPath, "..", "SharedImages")
+    );
+
+        public CategoryController(
+            IRepository<Category> categoryRepo,
+            IMapper mapper,
+            IToastNotification notification,
+            IWebHostEnvironment environment)
         {
             CategoryRepo = categoryRepo;
             this.mapper = mapper;
@@ -34,26 +50,39 @@ namespace Admin.Controllers
 
         public async Task<IActionResult> Add()
         {
+            var categories = await CategoryRepo.AllTableNoTracking
+                .ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
 
+            ViewBag.Categories = categories;
 
             return View();
         }
+
+
         [HttpPost]
-        [ValidateAntiForgeryToken]//این ویژگی برای محافظت از فرم در برابر درخواست‌های جعلی استفاده می‌شود.
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(CategoryDto dto)
         {
-
             if (!ModelState.IsValid)
             {
+                var categories = await CategoryRepo.AllTableNoTracking
+                    .ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
+                    .ToListAsync();
+
+                ViewBag.Categories = categories;
+
                 return View(dto);
             }
+
             var model = dto.ToEntity(mapper);
 
             if (dto.ImageFile != null)
             {
-                //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "CategoryImage");
-
-                model.ImageUrl = FileTool.SaveFile(dto.ImageFile,"CategoryImage",environment.WebRootPath);
+                model.ImageUrl = FileTool.SaveFile(
+    dto.ImageFile,
+    "CategoryImage",
+    SharedImagesPath);
             }
 
             model.CreationDateTime = DateTime.Now;
@@ -64,11 +93,34 @@ namespace Admin.Controllers
         }
         public async Task<IActionResult> List()
         {
-            var model = await CategoryRepo.AllTableNoTracking
+            var categories = await CategoryRepo.AllTableNoTracking
                 .ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
+                .OrderBy(x => x.Order)
                 .ToListAsync();
 
+            var model = categories
+                .Where(x => x.ParentId == null)
+                .ToList();
+
+            foreach (var category in model)
+            {
+                LoadChildren(category, categories);
+            }
+
             return View(model);
+        }
+
+        private void LoadChildren(CategoryDto category, List<CategoryDto> categories)
+        {
+            category.Children = categories
+                .Where(x => x.ParentId == category.Id)
+                .OrderBy(x => x.Order)
+                .ToList();
+
+            foreach (var child in category.Children)
+            {
+                LoadChildren(child, categories);
+            }
         }
 
         public async Task<IActionResult> Update(Guid Id)
@@ -97,7 +149,10 @@ namespace Admin.Controllers
                 {
                     //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "CategoryImage");
 
-                    model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "CategoryImage", environment.WebRootPath);
+                    model.ImageUrl = FileTool.SaveFile(
+    dto.ImageFile,
+    "CategoryImage",
+    SharedImagesPath);
                 }
 
                 CategoryRepo.Update(model);

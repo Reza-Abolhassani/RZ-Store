@@ -86,17 +86,25 @@
 <!-- Features Start -->
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-md-4 mt-4 pt-2">
+        <div class="col-md-4 mt-4 pt-2 px-2">
             <div class="card shop-features border-0 rounded overflow-hidden">
-                <img src="/images/shop/fea1.jpg" class="img-fluid" alt="">
+                <img src="/images/shop/fea3.jpg"
+                     class="img-fluid"
+                     alt="تمام محصولات فروشگاه R & Z">
+
                 <div class="category-title">
-                    <h4>تابستان <br> با تخفیف جذابه!</h4>
-                    <a href="javascript:void(0)" class="btn btn-sm btn-soft-primary mt-2">اکنون بخرید </a>
+                    <h4>تمام محصولات<br>فروشگاه R & Z</h4>
+
+                    <a asp-controller="Shop"
+                       asp-action="AllProduct"
+                       class="btn btn-sm btn-soft-primary mt-2">
+                        مشاهده همه محصولات
+                    </a>
                 </div>
             </div>
-        </div><!--end col-->
+        </div>
 
-        <div class="col-md-4 mt-4 pt-2">
+        <div class="col-md-4 mt-4 pt-2 px-2">
             <div class="card shop-features border-0 rounded overflow-hidden">
                 <img src="/images/shop/fea2.jpg" class="img-fluid" alt="">
                 <div class="category-title">
@@ -106,7 +114,7 @@
             </div>
         </div><!--end col-->
 
-        <div class="col-md-4 mt-4 pt-2">
+        <div class="col-md-4 mt-4 pt-2 px-2">
             <div class="card shop-features border-0 rounded overflow-hidden">
                 <img src="/images/shop/fea3.jpg" class="img-fluid" alt="">
                 <div class="category-title">
@@ -121,7 +129,8 @@
 <!-- Start -->
 <section class="section">
     <!-- Start پربازدیدترین محصولات -->
-    <div class="container">
+    <!-- <div class="container"> -->
+    <div style="background:#fff; border:1px solid #e9ecef; border-radius:24px; padding:25px;">
         <div class="row">
             <div class="col-12">
                 <h5 class="mb-0">جدیدترین محصولات</h5>
@@ -185,13 +194,68 @@
                 
             }
 
-
-            
-
             
         </div><!--end row-->
     </div><!--end container-->
     <!-- End Most Viewed Product -->
+    <!-- Start Promotional Banners -->
+    <div class="container-fluid mt-100 mt-60">
+        <div class="row">
+
+            <div class="col-md-4 mt-4 pt-2">
+                <div class="card shop-features border-0 rounded overflow-hidden">
+                    <img src="/images/shop/fea1.jpg"
+                         class="img-fluid"
+                         alt="تخفیف ویژه لوازم جانبی">
+
+                    <div class="category-title">
+                        <h4>تخفیف ویژه<br>لوازم جانبی</h4>
+                        <a asp-controller="Shop"
+                           asp-action="AllProduct"
+                           class="btn btn-sm btn-soft-primary mt-2">
+                            مشاهده محصولات
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mt-4 pt-2">
+                <div class="card shop-features border-0 rounded overflow-hidden">
+                    <img src="/images/shop/fea2.jpg"
+                         class="img-fluid"
+                         alt="محصولات پرطرفدار">
+
+                    <div class="category-title">
+                        <h4>محصولات<br>پرطرفدار</h4>
+                        <a asp-controller="Shop"
+                           asp-action="AllProduct"
+                           class="btn btn-sm btn-soft-primary mt-2">
+                            مشاهده محصولات
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mt-4 pt-2">
+                <div class="card shop-features border-0 rounded overflow-hidden">
+                    <img src="/images/shop/fea3.jpg"
+                         class="img-fluid"
+                         alt="جدیدترین لوازم جانبی">
+
+                    <div class="category-title">
+                        <h4>جدیدترین<br>لوازم جانبی</h4>
+                        <a asp-controller="Shop"
+                           asp-action="AllProduct"
+                           class="btn btn-sm btn-soft-primary mt-2">
+                            مشاهده محصولات
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Promotional Banners -->
     <!-- Start Categories -->
     <div class="container mt-100 mt-60">
         <div class="row">
@@ -225,7 +289,8 @@
     </div><!--end container-->
     <!-- Start Categories -->
     <!-- Start Popular -->
-    <div class="container mt-100 mt-60">
+    <!-- <div class="container mt-100 mt-60"> -->
+    <div style="background:#fff; border:1px solid #e9ecef; border-radius:24px; padding:25px;">
         <div class="row">
             <div class="col-12">
                 <h5 class="mb-0">محصولات محبوب </h5>
@@ -296,7 +361,7 @@
     </div><!--end container-->
     <!-- End Popular -->
     <!-- Start CTA -->
-    <div class="container-fluid mt-100 mt-60">
+    <div class="container-fluid mt-100 mt-60 px-0">
         <div class="rounded py-5" style="background: url('/images/shop/cta.jpg') fixed;">
             <div class="container">
                 <div class="row">
@@ -315,7 +380,8 @@
     </div><!--end container-->
     <!-- End CTA -->
     <!-- Start Recent -->
-    <div class="container mt-100 mt-60">
+    <!-- <div class="container mt-100 mt-60"> -->
+    <div style="background:#fff; border:1px solid #e9ecef; border-radius:24px; padding:25px;">
         <div class="row">
             <div class="col-12">
                 <h5 class="mb-0">ارزان‌ترین محصولات </h5>

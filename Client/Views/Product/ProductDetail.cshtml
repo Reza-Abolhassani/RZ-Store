@@ -78,17 +78,45 @@
                                     <h6 class="mb-0">تعداد: </h6>
                                     <div class="qty-icons ms-3">
                                         <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="btn btn-icon btn-soft-primary minus">-</button>
-                                        <input min="0" name="quantity" value="0" type="number" class="btn btn-icon btn-soft-primary qty-btn quantity">
+                                    <input min="1"
+                                           name="count"
+                                           value="1"
+                                           type="number"
+                                           class="btn btn-icon btn-soft-primary qty-btn quantity">
+
                                         <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="btn btn-icon btn-soft-primary plus">+</button>
                                     </div>
                                 </div>
                             </div><!--end col-->
                         </div><!--end row-->
 
+                    <form asp-controller="ShopCart" asp-action="Add" method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="ProductId" value="@Model.Id" />
+
+                        <input type="hidden" name="count" value="1" />
+
                         <div class="mt-4 pt-2">
-                            <a href="javascript:void(0)" class="btn btn-primary">اکنون بخرید </a>
-                            <a href="shop-cart.html" class="btn btn-soft-primary ms-2">افزودن به سبد</a>
+
+                            <button type="submit"
+                                    name="mobin"
+                                    value="true"
+                                    class="btn btn-primary">
+                                اکنون بخرید
+                            </button>
+
+                            <button type="submit"
+                                    name="mobin"
+                                    value="false"
+                                    class="btn btn-soft-primary ms-2">
+                                افزودن به سبد
+                            </button>
+
                         </div>
+
+                    </form>
                     </div>
                 </div><!--end col-->
             </div><!--end row-->

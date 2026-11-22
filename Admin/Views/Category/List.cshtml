@@ -1,10 +1,7 @@
 ﻿@model List<CategoryDto>
 
-@section style{
-
-    <!-- BEGIN PAGE CSS -->
+@section style {
     <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
-    <!-- END PAGE CSS -->
 
     <style>
         .category-image {
@@ -14,13 +11,23 @@
             border-radius: 8px;
             background: #f8f8f8;
         }
-    </style>
 
+        .category-title {
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .main-category {
+            font-weight: bold;
+        }
+
+        .sub-category {
+            color: #2196F3;
+        }
+    </style>
 }
 
-@section script{
-
-    <!-- BEGIN PAGE JAVASCRIPT -->
+@section script {
     <script src="/assets/plugins/data-table/js/export/jquery.dataTables.min.js"></script>
     <script src="/assets/plugins/data-table/js/export/dataTables.buttons.min.js"></script>
     <script src="/assets/plugins/data-table/js/export/jszip.min.js"></script>
@@ -30,74 +37,116 @@
     <script src="/assets/plugins/data-table/js/export/buttons.print.min.js"></script>
     <script src="/assets/plugins/data-table/js/export/fa.json"></script>
     <script src="/assets/js/pages/datatable-export.js"></script>
-    <!-- END PAGE JAVASCRIPT -->
 }
 
 <div class="col-lg-12">
     <div class="portlet box shadow">
+
         <div class="portlet-heading">
             <div class="portlet-title">
                 <h3 class="title">
                     <i class="icon-frane"></i>
-                    لیست دسته بندی
+                    جدول دسته بندی
                 </h3>
-            </div><!-- /.portlet-title -->
+            </div>
+        </div>
 
-        </div><!-- /.portlet-heading -->
         <div class="portlet-body">
+
             <div class="top-buttons-box mb-2">
                 <a class="btn btn-success" href="/Category/Add">
                     <i class="icon-plus"></i>
-                    افزودن
+                    افزودن دسته بندی
                 </a>
-
-            </div><!-- /.top-buttons-box -->
+            </div>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover table-striped" id="data-table">
+
                     <thead>
                         <tr>
                             <th>ردیف</th>
                             <th>تصویر</th>
-                            <th>نام </th>
+                            <th>نام</th>
+                            <th>دسته والد</th>
+                            <th>ترتیب</th>
                             <th>توضیحات</th>
-                            <th>ترتیب نمایش</th>
-                            <td>عملیات</td>
+                            <th>عملیات</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @{
                             int i = 1;
+
+                            void RenderCategories(List<CategoryDto> categories, int level)
+                            {
+                                foreach (var item in categories)
+                                {
+                                    <tr>
+                                        <td>@i</td>
+
+                                        <td>
+                                            <img src="@item.ImageUrl"
+                                                 alt="@item.Title"
+                                                 class="category-image" />
+                                        </td>
+
+                                        <td>
+                                            <span class="category-title"
+                                                  style="padding-right: @(level * 25)px;">
+
+                                                @if (level == 0)
+                                                {
+                                                    <span>📁 </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="sub-category">↳ </span>
+                                                }
+
+                                                @item.Title
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            @item.ParentTitle
+                                        </td>
+
+                                        <td>@item.Order</td>
+
+                                        <td>@item.Description</td>
+
+                                        <td>
+                                            <a href="/Category/Update?id=@item.Id"
+                                               class="btn btn-info">
+                                                ویرایش
+                                            </a>
+
+                                            <a href="/Category/Delete?id=@item.Id"
+                                               class="btn btn-danger"
+                                               onclick="return confirm('آیا از حذف این دسته‌بندی مطمئن هستید؟')">
+                                                حذف
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    i++;
+
+                                    if (item.Children != null && item.Children.Any())
+                                    {
+                                        RenderCategories(item.Children, level + 1);
+                                    }
+                                }
+                            }
+
+                            RenderCategories(Model, 0);
                         }
-
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@i</td>
-                                <td>
-                                    <img src="@item.ImageUrl" class="category-image" />
-                                </td>
-                                <td>@item.Title </td>
-                                <td>@item.Description</td>
-                                <td>@item.Order</td>
-                                <td>
-                                    <a href="/Category/Update?id=@item.Id" class="btn btn-info">ویرایش</a>
-
-                                    <a href="/Category/Delete?id=@item.Id" class="btn btn-danger"
-                                       onclick="return confirm('آیا از حذف این دسته‌بندی مطمئن هستید؟')">
-                                        حذف
-                                    </a>
-                                </td>
-                            </tr>
-
-                            i++;
-
-                        }
-
-
                     </tbody>
+
                 </table>
-            </div><!-- /.table-responsive -->
-        </div><!-- /.portlet-body -->
-    </div><!-- /.portlet -->
-</div><!-- /.col-lg-12 -->
+            </div>
+
+        </div>
+    </div>
+</div>
