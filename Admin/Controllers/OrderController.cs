@@ -12,6 +12,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Data;
+
 namespace Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -24,8 +26,9 @@ namespace Admin.Controllers
 
         private readonly IRepository<OrderItem> OrderItemRepo;
         private readonly IRepository<Product> ProductRepo;
+        private readonly ApplicationDbContext _context;
 
-        public OrderController(IRepository<Order> orderRepo, UserManager<User> userManager, IToastNotification notification, IMapper mapper, IRepository<OrderItem> orderItemRepo, IRepository<Product> productRepo)
+        public OrderController(IRepository<Order> orderRepo, UserManager<User> userManager, IToastNotification notification, IMapper mapper, IRepository<OrderItem> orderItemRepo, IRepository<Product> productRepo, ApplicationDbContext context)
         {
             OrderRepo = orderRepo;
             this.userManager = userManager;
@@ -33,6 +36,7 @@ namespace Admin.Controllers
             this.mapper = mapper;
             OrderItemRepo = orderItemRepo;
             ProductRepo = productRepo;
+            _context = context;
         }
 
         //public async Task<IActionResult> Add()
@@ -117,13 +121,30 @@ namespace Admin.Controllers
             return RedirectToAction("List");
         }
 
+        // نمایش لیست سفارشات همراه با مجموع تعداد کالاهای هر سفارش
         public async Task<IActionResult> List()
         {
-            var model = await OrderRepo.TableNoTracking.ProjectTo<OrderDto>(mapper.ConfigurationProvider)
+            var model = await OrderRepo.TableNoTracking
+                .ProjectTo<OrderDto>(mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            foreach (var order in model)
+            {
+                order.ProductCount = await OrderItemRepo.TableNoTracking
+                    .Where(x => x.OrderId == order.Id)
+                    .SumAsync(x => (int?)x.Count) ?? 0;
+            }
 
             return View(model);
         }
+
+        //public async Task<IActionResult> List()
+        //{
+        //    var model = await OrderRepo.TableNoTracking.ProjectTo<OrderDto>(mapper.ConfigurationProvider)
+        //        .ToListAsync();
+
+        //    return View(model);
+        //}
 
         public async Task<IActionResult> Update(Guid Id)
         {
@@ -295,7 +316,12 @@ namespace Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid Id)
         {
-            var order = await OrderRepo.AllTableNoTracking
+            // شروع تراکنش
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync();
+
+            // دریافت سفارش به صورت Tracked
+            var order = await OrderRepo.Table
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
             if (order == null)
@@ -304,31 +330,49 @@ namespace Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            // دریافت تمام آیتم‌های سفارش
-            var items = await OrderItemRepo.AllTableNoTracking
+            // دریافت آیتم‌های سفارش
+            var items = await OrderItemRepo.Table
                 .Where(x => x.OrderId == order.Id)
                 .ToListAsync();
 
-            // بازگرداندن موجودی محصولات و حذف آیتم‌ها
-            foreach (var item in items)
+            // اگر سفارش قبلاً لغو نشده باشد، موجودی را برگردان
+            if (order.Status != OrderStatus.Cancelled)
             {
-                var product = await ProductRepo.AllTableNoTracking
-                    .FirstOrDefaultAsync(x => x.Id == item.ProductId);
-
-                if (product != null)
+                foreach (var item in items)
                 {
-                    // بازگرداندن تعداد محصول به انبار
+                    // دریافت محصول به صورت Tracked
+                    var product = await ProductRepo.Table
+                        .FirstOrDefaultAsync(x => x.Id == item.ProductId);
+
+                    if (product == null)
+                    {
+                        notification.AddErrorToastMessage(
+                            "یکی از محصولات سفارش یافت نشد و حذف انجام نشد");
+
+                        return RedirectToAction("List");
+                    }
+
+                    // بازگرداندن موجودی محصول
                     product.Count += item.Count;
 
-                    ProductRepo.Update(product);
+                    ProductRepo.Update(product, saveNow: false);
                 }
-
-                // حذف آیتم سفارش
-                OrderItemRepo.Delete(item);
             }
 
-            // حذف خود سفارش
-            OrderRepo.Delete(order);
+            // حذف آیتم‌های سفارش بدون ذخیره جداگانه
+            foreach (var item in items)
+            {
+                OrderItemRepo.Delete(item, saveNow: false);
+            }
+
+            // حذف خود سفارش بدون ذخیره جداگانه
+            OrderRepo.Delete(order, saveNow: false);
+
+            // ذخیره تمام تغییرات
+            await _context.SaveChangesAsync();
+
+            // نهایی کردن تراکنش
+            await transaction.CommitAsync();
 
             notification.AddSuccessToastMessage(
                 "سفارش و آیتم‌های آن با موفقیت حذف شدند");
@@ -336,22 +380,94 @@ namespace Admin.Controllers
             return RedirectToAction("List");
         }
 
-        //public async Task<IActionResult> Delete(Guid Id)
-        //{
-        //    var order = await OrderRepo.AllTableNoTracking
-        //        .FirstOrDefaultAsync(x => x.Id == Id);
 
-        //    if (order == null)
-        //    {
-        //        notification.AddErrorToastMessage("سفارش مورد نظر یافت نشد");
-        //        return RedirectToAction("List");
-        //    }
 
-        //    OrderRepo.Delete(order);
 
-        //    notification.AddSuccessToastMessage("سفارش با موفقیت حذف شد");
+        // لغو سفارش و بازگرداندن موجودی محصولات به انبار، بدون حذف سفارش
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(Guid Id)
+        {
+            // شروع تراکنش
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
-        //    return RedirectToAction("List");
-        //}
+            // پیدا کردن سفارش
+            var order = await OrderRepo.Table
+                .FirstOrDefaultAsync(x => x.Id == Id);
+
+            if (order == null)
+            {
+                notification.AddErrorToastMessage("سفارش مورد نظر یافت نشد");
+                return RedirectToAction("List");
+            }
+
+            // بررسی اینکه سفارش قبلاً لغو نشده باشد
+            if (order.Status == OrderStatus.Cancelled)
+            {
+                notification.AddWarningToastMessage("این سفارش قبلاً لغو شده است");
+                return RedirectToAction("List");
+            }
+
+            // بررسی وضعیت مجاز برای لغو سفارش
+            if (order.Status != OrderStatus.NotPayed &&
+                order.Status != OrderStatus.Pending)
+            {
+                notification.AddErrorToastMessage("این سفارش در وضعیت فعلی قابل لغو نیست");
+                return RedirectToAction("List");
+            }
+
+            // بررسی پرداخت
+            if (order.IsPaid)
+            {
+                notification.AddErrorToastMessage("سفارش پرداخت شده قابل لغو نیست");
+                return RedirectToAction("List");
+            }
+
+            // دریافت آیتم‌های سفارش
+            var orderItems = await OrderItemRepo.TableNoTracking
+                .Where(x => x.OrderId == order.Id)
+                .ToListAsync();
+
+            if (orderItems.Count == 0)
+            {
+                notification.AddErrorToastMessage("آیتمی برای این سفارش یافت نشد");
+                return RedirectToAction("List");
+            }
+
+            // بازگرداندن تعداد محصولات سفارش به موجودی انبار
+            foreach (var item in orderItems)
+            {
+                var product = await ProductRepo.Table
+                    .FirstOrDefaultAsync(x => x.Id == item.ProductId);
+
+                if (product == null)
+                {
+                    notification.AddErrorToastMessage("یکی از محصولات سفارش یافت نشد");
+                    return RedirectToAction("List");
+                }
+
+                product.Count += item.Count;
+
+                ProductRepo.Update(product, saveNow: false);
+            }
+
+            // تغییر وضعیت سفارش به لغو شده
+            order.Status = OrderStatus.Cancelled;
+
+            // ذخیره تغییرات داخل تراکنش
+            OrderRepo.Update(order, saveNow: false);
+
+            // ذخیره تمام تغییرات دیتابیس
+            await _context.SaveChangesAsync();
+
+            // نهایی کردن تراکنش
+            await transaction.CommitAsync();
+
+            notification.AddSuccessToastMessage("سفارش با موفقیت لغو شد و موجودی به انبار برگشت");
+
+            // ادامه عملیات لغو در مرحله بعد
+
+            return RedirectToAction("List");
+        }
     }
 }

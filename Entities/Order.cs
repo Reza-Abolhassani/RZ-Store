@@ -19,5 +19,15 @@ namespace Entities
 
         public Guid UserId { get; set; }
         public User User { get; set; }
+
+        // اطلاعات گیرنده سفارش
+        public string ReceiverName { get; set; }
+        public string ReceiverPhone { get; set; }
+
+        // اطلاعات آدرس سفارش
+        public string Province { get; set; }
+        public string City { get; set; }
+        public string Address { get; set; }
+        public string PostalCode { get; set; }
     }
 }

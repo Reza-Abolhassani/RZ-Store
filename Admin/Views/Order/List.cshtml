@@ -1,23 +1,21 @@
-﻿
-
-@section style {
+﻿@section style {
     <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
 
     <style>
         .order-action-btn {
-    width: 120px !important;
-    height: 40px !important;
-    min-width: 120px;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    margin: 3px;
-    padding: 0 5px !important;
-    font-size: 13px;
-    white-space: nowrap;
-    vertical-align: middle;
-}
+            width: 120px !important;
+            height: 40px !important;
+            min-width: 120px;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            margin: 3px;
+            padding: 0 5px !important;
+            font-size: 13px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
     </style>
 
 
@@ -73,6 +71,7 @@
                             <th>قیمت اصلی</th>
                             <th>تخفیف</th>
                             <th>مبلغ نهایی</th>
+                            <th>تعداد کالاها</th>
                             <th>عملیات</th>
                         </tr>
                     </thead>
@@ -152,6 +151,9 @@
                                         @item.Total.ToString("N0") تومان
                                     </strong>
                                 </td>
+                                <td>
+                                    <strong>@item.ProductCount</strong>
+                                </td>
 
                                 <td>
 
@@ -164,6 +166,29 @@
                                        class="btn btn-info order-action-btn">
                                         ویرایش
                                     </a>
+
+                                    @if (item.Status != OrderStatus.Cancelled &&
+                                                                    item.Status != OrderStatus.Shipped &&
+                                                                    item.Status != OrderStatus.Delivered &&
+                                                                    item.Status != OrderStatus.Returned &&
+                                                                    !item.IsPaid)
+                                    {
+                                        <form asp-controller="Order"
+                                              asp-action="Cancel"
+                                              method="post"
+                                              style="display:inline;"
+                                              onsubmit="return confirm('آیا از لغو این سفارش مطمئن هستید؟')">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden" name="Id" value="@item.Id" />
+
+                                            <button type="submit" class="btn btn-warning order-action-btn">
+                                                لغو سفارش
+                                            </button>
+
+                                        </form>
+                                    }
 
                                     <form asp-controller="Order"
                                           asp-action="Delete"

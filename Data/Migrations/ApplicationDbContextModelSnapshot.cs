@@ -614,6 +614,12 @@ namespace Data.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
@@ -629,8 +635,20 @@ namespace Data.Migrations
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Province")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("RawPrice")
                         .HasColumnType("int");
+
+                    b.Property<string>("ReceiverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverPhone")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Shipping")
                         .HasColumnType("nvarchar(max)");
@@ -1406,6 +1424,53 @@ namespace Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.UserAddress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Province")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAddresses");
+                });
+
             modelBuilder.Entity("Entities.UserWallet", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1786,6 +1851,17 @@ namespace Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Entities.UserAddress", b =>
+                {
+                    b.HasOne("Entities.User", "User")
+                        .WithMany("Addresses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Entities.UserWallet", b =>
                 {
                     b.HasOne("Entities.User", "User")
@@ -1856,6 +1932,11 @@ namespace Data.Migrations
             modelBuilder.Entity("Entities.ShopCart", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Entities.User", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 #pragma warning restore 612, 618
         }

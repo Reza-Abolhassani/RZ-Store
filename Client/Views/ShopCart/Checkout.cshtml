@@ -1,0 +1,379 @@
+﻿@model Client.Dto.CheckoutDto
+
+@{
+    var selectedShipping = Model.ShippingTypes
+        .FirstOrDefault(x => x.Id == Model.ShippingTypeId);
+
+    var shippingPrice = selectedShipping?.Price ?? 0;
+
+    var finalPrice = Model.ShopCart.TotalPrice + shippingPrice;
+}
+
+
+
+
+
+
+<!-- Loader -->
+<!-- <div id="preloader">
+    <div id="status">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+    </div>
+</div> -->
+<!-- Loader -->
+<!-- Hero Start -->
+<section class="bg-half bg-light d-table w-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12 text-center">
+                <div class="page-next-level">
+                    <h4 class="title"> صندوق ها </h4>
+                    <div class="page-next">
+                        <nav aria-label="breadcrumb" class="d-inline-block">
+                            <ul class="breadcrumb bg-white rounded shadow mb-0">
+                                <li class="breadcrumb-item"><a href="index.html">لنـدریـک </a></li>
+                                <li class="breadcrumb-item"><a href="index-shop.html">فروشگاه </a></li>
+                                <li class="breadcrumb-item active" aria-current="page">صندوق ها </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div><!--end col-->
+        </div><!--end row-->
+    </div> <!--end container-->
+</section><!--end section-->
+<div class="position-relative">
+    <div class="shape overflow-hidden text-white">
+        <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
+        </svg>
+    </div>
+</div>
+<!-- Hero End -->
+<!-- Start -->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 col-md-6">
+                <div class="rounded shadow-lg p-4">
+                    <h5 class="mb-0">جزئیات صورتحساب :</h5>
+
+                    <div class="mt-4">
+
+                        @if (Model.UserAddresses != null && Model.UserAddresses.Count > 0)
+                        {
+                            foreach (var address in Model.UserAddresses)
+                            {
+                                <div class="border rounded p-3 mb-3">
+
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="UserAddressId"
+                                               value="@address.Id"
+                                               id="address_@address.Id"
+                                               form="checkoutForm"
+                                               checked="@(address.IsDefault ||
+                                                                                                         (!Model.UserAddresses.Any(x => x.IsDefault) &&
+                                                                                                          address.Id == Model.UserAddresses.First().Id))" />
+
+                                        <label class="form-check-label" for="address_@address.Id">
+
+                                            <strong>@address.ReceiverName</strong>
+
+                                            <div class="mt-2">
+                                                @address.ReceiverPhone
+                                            </div>
+
+                                            <div class="mt-2">
+                                                @address.Province - @address.City
+                                            </div>
+
+                                            <div class="mt-2">
+                                                @address.Address
+                                            </div>
+
+                                            <div class="mt-2">
+                                                کد پستی: @address.PostalCode
+                                            </div>
+
+                                        </label>
+                                    </div>
+
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                هنوز آدرسی ثبت نکرده‌اید.
+                            </div>
+                        }
+
+                        <hr class="my-4" />
+
+                        <h5 class="mb-3">ثبت آدرس جدید</h5>
+
+                        <form asp-controller="ShopCart"
+                              asp-action="AddAddress"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-3">
+                                    <label>نام و نام خانوادگی گیرنده</label>
+                                    <input type="text" name="ReceiverName"
+                                           class="form-control" required />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label>شماره تلفن</label>
+                                    <input type="text" name="ReceiverPhone"
+                                           class="form-control" required />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label>استان</label>
+                                    <input type="text" name="Province"
+                                           class="form-control" required />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label>شهر</label>
+                                    <input type="text" name="City"
+                                           class="form-control" required />
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label>آدرس کامل</label>
+                                    <textarea name="Address"
+                                              class="form-control"
+                                              rows="3" required></textarea>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label>کد پستی</label>
+                                    <input type="text" name="PostalCode"
+                                           class="form-control" required />
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox"
+                                               name="IsDefault"
+                                               value="true"
+                                               class="form-check-input"
+                                               id="IsDefault" />
+
+                                        <label class="form-check-label" for="IsDefault">
+                                            ثبت به عنوان آدرس پیش‌فرض
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                ذخیره آدرس
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+
+                <div class="form-check form-check-inline my-4">
+                    <div class="mb-0">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="creataccount">
+                            <label class="form-check-label" for="creataccount">ایجاد حساب کاربری؟</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded shadow-lg p-4">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="addresscheck">
+                            <label class="form-check-label" for="addresscheck">به آدرس دیگری ارسال شود؟</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">نظرات </label>
+                        <textarea name="comments" id="comments" rows="4" class="form-control" placeholder="یادداشت هایی در مورد سفارش شما :"></textarea>
+                    </div>
+                </div>
+            </div><!--end col-->
+
+            <div class="col-lg-5 col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                <div class="rounded shadow-lg p-4 sticky-bar">
+                    <div class="d-flex mb-4 justify-content-between">
+
+                        <h5>@Model.ShopCart.Items.Sum(x => x.count) آیتم</h5>
+
+                        <a asp-controller="ShopCart"
+                           asp-action="ShopCart"
+                           class="text-muted h6">
+                            نمایش جزئیات
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-center table-padding mb-0">
+                            <tbody>
+
+                                <tr>
+                                    <td class="h6 border-0">مجموع قبل از تخفیف</td>
+                                    <td class="text-end fw-bold border-0">
+                                        @Model.ShopCart.TotalRawPrice.ToString("N0") تومان
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="h6">مبلغ تخفیف</td>
+                                    <td class="text-end fw-bold text-success">
+                                        @Model.ShopCart.DiscountPrice.ToString("N0") تومان
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="h6">هزینه ارسال</td>
+                                    <td class="text-end fw-bold">
+                                        <span id="shippingPrice">
+                                            @shippingPrice.ToString("N0")
+                                        </span>
+                                        تومان
+                                    </td>
+                                    <td class="text-end fw-bold">
+                                        @if (Model.ShippingTypes != null && Model.ShippingTypes.Any())
+                                        {
+                                            <select asp-for="ShippingTypeId"
+                                                    class="form-select"
+                                                    form="checkoutForm">
+
+                                                @foreach (var shipping in Model.ShippingTypes)
+                                                {
+                                                    <option value="@shipping.Id" data-price="@shipping.Price">
+                                                        @shipping.Name - @shipping.Price.ToString("N0") تومان
+                                                    </option>
+                                                }
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <span>روش ارسالی ثبت نشده است</span>
+                                        }
+                                    </td>
+                                </tr>
+
+                                <tr class="bg-light">
+                                    <td class="h5 fw-bold">مبلغ نهایی</td>
+                                    <td class="text-end text-primary h4 fw-bold">
+                                        <span id="finalPrice">
+                                            @finalPrice.ToString("N0")
+                                        </span>
+                                        تومان
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                        <ul class="list-unstyled mt-4 mb-0">
+                            <li>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" checked type="radio" name="flexRadioDefault" id="banktransfer">
+                                        <label class="form-check-label" for="banktransfer">انتقال مبلغ</label>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="mt-3">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="chequepay">
+                                        <label class="form-check-label" for="chequepay">پرداخت را چک کنید</label>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="mt-3">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="cashdelivery">
+                                        <label class="form-check-label" for="cashdelivery">پرداخت نقدی هنگام تحویل</label>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="mt-3">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="paypalpay">
+                                        <label class="form-check-label" for="paypalpay">پی پال <a href="https://www.paypal.com/uk/webapps/mpp/paypal-popup" target="_blank" class="ms-2 text-primary">پی پال چیست؟</a></label>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <form id="checkoutForm"
+                              asp-controller="ShopCart"
+                              asp-action="Checkout"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="mt-4 pt-2">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        سفارش دهید
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><!--end row-->
+    </div><!--end container-->
+</section><!--end section-->
+<!-- End -->
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const shippingSelect = document.querySelector('select[name="ShippingTypeId"]');
+
+        const shippingPriceElement = document.getElementById("shippingPrice");
+
+        const finalPriceElement = document.getElementById("finalPrice");
+
+        const cartTotalPrice = @Model.ShopCart.TotalPrice;
+
+        function updatePrice() {
+
+            const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
+
+            const shippingPrice = Number(selectedOption.dataset.price);
+
+            const finalPrice = cartTotalPrice + shippingPrice;
+
+            shippingPriceElement.innerText = shippingPrice.toLocaleString('en-US');
+
+            finalPriceElement.innerText = finalPrice.toLocaleString('en-US');
+        }
+
+        shippingSelect.addEventListener("change", updatePrice);
+
+        updatePrice();
+    });
+</script>
+

@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Identity;
 
 using System;
+using System.Collections.Generic;
 
 namespace Entities
 {
@@ -19,6 +20,9 @@ namespace Entities
         public bool IsActive { get; set; }
         public long WalletAmount { get; set; }
         public string ImageUrl { get; set; }
+
+
+        public ICollection<UserAddress> Addresses { get; set; }
 
         //public GenderType Gender { get; set; }
 

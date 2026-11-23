@@ -22,6 +22,7 @@ namespace Admin.Models
         public int Discount { get; set; }
 
         public int Total { get; set; }
+        public int ProductCount { get; set; }//مثلاً اگر مشتری ۲ قاب، ۱ شارژر و ۳ گلس خریده باشه،مقدار ProductCount برابر ۶ می‌شه.
 
         public Guid UserId { get; set; }
 
