@@ -243,6 +243,19 @@ namespace Admin.Controllers
             return RedirectToAction("List");
         }
 
+        // نمایش آدرس‌های ثبت‌شده توسط مشتریان
+        public async Task<IActionResult> UserAddresses()
+        {
+            var addresses = await userManager.Users
+                .SelectMany(x => x.Addresses)
+                .Include(x => x.User)
+                .ToListAsync();
+
+            var model = mapper.Map<List<UserAddressDto>>(addresses);
+
+            return View(model);
+        }
+
         // دریافت شهرهای مربوط به استان انتخاب شده
         [HttpGet]
         public async Task<IActionResult> GetCitiesOfProvince(Guid provinceId)

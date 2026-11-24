@@ -1,0 +1,106 @@
+﻿@model Entities.UserAddress
+
+@{
+    ViewData["Title"] = "افزودن آدرس جدید";
+}
+
+<div class="container mt-4 mb-5" dir="rtl"
+     style="padding-top: 200px;">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0">افزودن آدرس جدید</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form asp-controller="Profile"
+                          asp-action="CreateAddress"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">نام تحویل‌گیرنده</label>
+                            <input asp-for="ReceiverName"
+                                   class="form-control"
+                                   placeholder="نام تحویل‌گیرنده" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">شماره موبایل</label>
+                            <input asp-for="ReceiverPhone"
+                                   class="form-control"
+                                   placeholder="شماره موبایل" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">استان</label>
+                            <input asp-for="Province"
+                                   class="form-control"
+                                   placeholder="استان" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">شهر</label>
+                            <input asp-for="City"
+                                   class="form-control"
+                                   placeholder="شهر" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">آدرس کامل</label>
+                            <textarea asp-for="Address"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="آدرس کامل"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">کد پستی</label>
+                            <input asp-for="PostalCode"
+                                   class="form-control"
+                                   placeholder="کد پستی" />
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input asp-for="IsDefault"
+                                   class="form-check-input" />
+                            <label asp-for="IsDefault"
+                                   class="form-check-label">
+                                انتخاب به‌عنوان آدرس پیش‌فرض
+                            </label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                ثبت آدرس
+                            </button>
+
+                            <a asp-controller="Profile"
+                               asp-action="Addresses"
+                               class="btn btn-secondary">
+                                بازگشت
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

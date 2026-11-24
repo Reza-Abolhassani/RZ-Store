@@ -1,0 +1,93 @@
+﻿@model List<Admin.Models.UserAddressDto>
+
+@{
+    ViewData["Title"] = "آدرس مشتریان";
+}
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5>آدرس مشتریان</h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped text-center">
+
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام کاربری</th>
+                            <th>نام تحویل‌گیرنده</th>
+                            <th>شماره تماس</th>
+                            <th>استان</th>
+                            <th>شهر</th>
+                            <th>کد پستی</th>
+                            <th>آدرس کامل</th>
+                            <th>وضعیت</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            int row = 1;
+
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@row</td>
+                                    <td>@item.UserName</td>
+                                    <td>@item.ReceiverName</td>
+                                    <td>@item.ReceiverPhone</td>
+                                    <td>@item.Province</td>
+                                    <td>@item.City</td>
+                                    <td>@item.PostalCode</td>
+                                    <td>@item.Address</td>
+
+                                    <td>
+                                        @if (item.IsDefault)
+                                        {
+                                            <span class="badge bg-success">
+                                                پیش‌فرض
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                عادی
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+
+                                row++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9">
+                                    هیچ آدرسی توسط مشتریان ثبت نشده است.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
