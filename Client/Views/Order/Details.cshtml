@@ -1,0 +1,159 @@
+﻿@model Client.Models.OrderDto
+
+@using System.Collections.Generic
+@using System.Linq
+@using Entities
+
+@{
+    ViewData["Title"] = "جزئیات سفارش";
+
+    var items = ViewBag.OrderItems as List<Client.Models.OrderItemDto>;
+}
+
+<div class="container mt-4" dir="rtl">
+
+    <h3 class="mb-4">جزئیات سفارش</h3>
+
+    @* پیام موفقیت و خطا *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    @* اطلاعات اصلی سفارش *@
+    <div class="card p-3 mb-4">
+
+        <h5 class="mb-3">اطلاعات سفارش</h5>
+
+        <p>
+            <strong>شماره سفارش:</strong>
+            @Model.Code
+        </p>
+
+        <p>
+            <strong>تاریخ ثبت:</strong>
+            @Model.CreationDateTime.ToString("yyyy/MM/dd")
+        </p>
+
+        <p>
+            <strong>مبلغ کل:</strong>
+            @Model.RawPrice.ToString("N0") تومان
+        </p>
+
+        <p>
+            <strong>مبلغ تخفیف:</strong>
+            @Model.Discount.ToString("N0") تومان
+        </p>
+
+        <p>
+            <strong>هزینه ارسال:</strong>
+            @Model.ShippingPrice.ToString("N0") تومان
+        </p>
+
+        <p>
+            <strong>مبلغ نهایی:</strong>
+            @Model.Total.ToString("N0") تومان
+        </p>
+
+        <p>
+            <strong>وضعیت سفارش:</strong>
+            @Model.Status
+        </p>
+
+    </div>
+
+    @* محصولات سفارش *@
+    <div class="card p-3 mb-4">
+
+        <h5 class="mb-3">محصولات سفارش</h5>
+
+        @if (items != null && items.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table table-bordered text-center">
+
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th>قیمت واحد</th>
+                            <th>تعداد</th>
+                            <th>تخفیف هر واحد</th>
+                            <th>مبلغ کل</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in items)
+                        {
+                            <tr>
+                                <td>@item.ProductTitle</td>
+
+                                <td>
+                                    @item.ProductPrice.ToString("N0") تومان
+                                </td>
+
+                                <td>@item.Count</td>
+
+                                <td>
+                                    @item.Discount.ToString("N0") تومان
+                                </td>
+
+                                <td>
+                                    @item.Total.ToString("N0") تومان
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">
+                محصولی برای این سفارش ثبت نشده است.
+            </p>
+        }
+
+    </div>
+
+    @* دکمه لغو سفارش *@
+    @if (Model.Status == OrderStatus.NotPayed ||
+        Model.Status == OrderStatus.Pending)
+    {
+        <form asp-controller="Order"
+              asp-action="Cancel"
+              asp-route-id="@Model.Id"
+              method="post"
+              class="d-inline">
+
+            @Html.AntiForgeryToken()
+
+            <button type="submit"
+                    class="btn btn-danger"
+                    onclick="return confirm('آیا از لغو این سفارش مطمئن هستید؟')">
+                لغو سفارش
+            </button>
+
+        </form>
+    }
+
+    @* بازگشت به لیست سفارش ها *@
+    <a asp-controller="Order"
+       asp-action="Index"
+       class="btn btn-secondary">
+        بازگشت به سفارش‌ها
+    </a>
+
+</div>

@@ -22,6 +22,7 @@ namespace Client.Models
         public int Discount { get; set; }
 
         public int Total { get; set; }
+        public DateTime CreationDateTime { get; set; }
 
         public Guid UserId { get; set; }
 

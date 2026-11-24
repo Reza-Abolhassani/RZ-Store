@@ -136,77 +136,7 @@ namespace Admin.Controllers
             return RedirectToAction("List", new { OId = dto.OrderId });
         }
 
-        //public async Task<IActionResult> Add()
-        //{
-
-        //    var model = new OrderItemDto();
-
-        //    model.products = await ProductRepo.TableNoTracking
-        //        .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
-        //        .ToListAsync();
-
-        //    model.orders = await OrderRepo.TableNoTracking
-        //        .ProjectTo<OrderDto>(mapper.ConfigurationProvider)
-        //        .ToListAsync();
-
-        //    return View(model);
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> Add(OrderItemDto dto)
-        //{
-        //    if (dto.Count <= 0)
-        //    {
-        //        notification.AddErrorToastMessage("تعداد باید بیشتر از صفر باشد");
-        //        return RedirectToAction("Add");
-        //    }
-
-        //    var model = dto.ToEntity(mapper);
-
-        //    var product = await ProductRepo.TableNoTracking
-        //        .FirstOrDefaultAsync(x => x.Id == dto.ProductId);
-
-        //    if (product == null)
-        //    {
-        //        notification.AddErrorToastMessage("محصول مورد نظر یافت نشد");
-        //        return RedirectToAction("Add");
-        //    }
-
-        //    if (product.Count<dto.Count)
-        //    {
-        //        notification.AddErrorToastMessage("موجودی کافی نیست");
-
-        //        return RedirectToAction();
-        //    }
-
-        //    model.ProductPrice = product.Total;
-
-        //    model.Total = product.Total * dto.Count;
-
-        //    OrderItemRepo.Add(model);
-
-        //    // کاهش موجودی محصول بعد از اضافه شدن به سفارش
-        //    product.Count -= dto.Count;
-
-        //    ProductRepo.Update(product);
-
-        //    var order = await OrderRepo.TableNoTracking
-        //        .FirstOrDefaultAsync(x => x.Id == dto.OrderId);
-
-        //    if (order == null)
-        //    {
-        //        notification.AddErrorToastMessage("سفارش مورد نظر یافت نشد");
-        //        return RedirectToAction("List");
-        //    }
-
-        //    order.Total += model.Total;
-
-        //    OrderRepo.Update(order);
-
-        //    notification.AddSuccessToastMessage("محصول با موفقیت به سفارش اضافه شد");
-
-        //    return RedirectToAction("List");
-
-        //}
+       
 
 
         public async Task<IActionResult> List(Guid OId)
@@ -220,14 +150,7 @@ namespace Admin.Controllers
 
             return View(model);
         }
-        //public async Task<IActionResult> List(Guid OId)
-        //{
-        //    var model = await OrderItemRepo.TableNoTracking
-        //        .Where(x=>x.OrderId == OId)
-        //        .ProjectTo<OrderItemDto>(mapper.ConfigurationProvider).ToListAsync();
-
-        //    return View(model);
-        //}
+       
 
         public async Task<IActionResult> Update(Guid Id)
         {
@@ -397,7 +320,7 @@ namespace Admin.Controllers
                           + order.ShippingPrice;
 
             // بازگرداندن موجودی محصول به انبار
-            if (product != null)
+            if (product != null && order.Status != OrderStatus.Cancelled)
             {
                 product.Count += model.Count;
                 ProductRepo.Update(product);
