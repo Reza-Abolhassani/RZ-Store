@@ -73,22 +73,7 @@ namespace Admin.Controllers
             // انتقال کاربران عادی به صفحه اصلی سایت
             return RedirectToAction("Index", "Home");
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Login([Required] string UserName, [Required] string Password)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        notification.AddErrorToastMessage("کاربر یافت نشد");
-        //        return RedirectToAction();
-        //    }
-        //    var Status = await signInManager.PasswordSignInAsync(UserName, Password, true, true);
-        //    if (Status.Succeeded == false)
-        //    {
-        //        notification.AddErrorToastMessage("اطلاعات ورود اشتباه است");
-        //        return RedirectToAction();
-        //    }
-        //    return RedirectToAction("index", "home");
-        //}
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -100,11 +85,6 @@ namespace Admin.Controllers
         }
 
 
-        //public async Task<IActionResult> LogOut()
-        //{
-        //    await signInManager.SignOutAsync();
-
-        //    return RedirectToAction(nameof(Login));
-        //}
+        
     }
 }

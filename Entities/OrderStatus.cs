@@ -25,25 +25,4 @@ namespace Entities
 }
 
 
-//using System.ComponentModel.DataAnnotations;
 
-//namespace Entities
-//{
-//    public enum OrderStatus
-//    {
-//        [Display(Name = "پرداخت نشده")]
-//        NotPayed,
-
-//        [Display(Name = "در حال پردازش  ")]
-//        Pending,
-
-//        [Display(Name = "ارسال شده ")]
-//        Delivered,
-
-//        [Display(Name = "لغو شده")]
-//        Cancelled,
-
-//        [Display(Name = "مرجوع شده")]
-//        Returned
-//    }
-//}

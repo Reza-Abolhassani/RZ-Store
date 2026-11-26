@@ -147,7 +147,7 @@ namespace Admin.Controllers
 
                 if (dto.ImageFile != null)
                 {
-                    //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "CategoryImage");
+
 
                     model.ImageUrl = FileTool.SaveFile(
     dto.ImageFile,
@@ -168,10 +168,7 @@ namespace Admin.Controllers
             var category = await CategoryRepo.AllTableNoTracking
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
-            //if (category == null)
-            //{
-            //    return NotFound();
-            //}
+
 
             if (category == null)
             {

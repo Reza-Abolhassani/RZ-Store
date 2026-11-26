@@ -1,14 +1,15 @@
 ﻿using Entities;
 using System;
 using System.Collections.Generic;
-using System.Transactions;
 using WebFramework.Api;
+
+using TransactionStatus = Entities.TransactionStatus;
 
 namespace Client.Models
 {
-    public class TransactionHistoryDto : BaseDto<TransactionHistoryDto,TransactionHistory>
+    public class TransactionHistoryDto : BaseDto<TransactionHistoryDto, TransactionHistory>
     {
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string Description { get; set; }
         public TransactionStatus Status { get; set; }
         public DateTime CreationDateTime { get; set; }

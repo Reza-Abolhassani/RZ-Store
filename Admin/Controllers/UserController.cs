@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Data;
+using Services.Interfaces;
 
 
 
@@ -32,13 +34,16 @@ namespace Admin.Controllers
 
         private readonly IWebHostEnvironment environment;
 
+        private readonly IWalletService walletService;
+        private readonly ApplicationDbContext dbContext;
+
 
         private string SharedImagesPath =>
     Path.GetFullPath(
         Path.Combine(environment.ContentRootPath, "..", "SharedImages")
     );
 
-        public UserController(UserManager<User> userManager, IToastNotification notification, IMapper mapper, IRepository<UserWallet> userWalletRepo, IRepository<TransactionHistory> transactionHistoryRepo, IWebHostEnvironment environment)
+        public UserController(UserManager<User> userManager, IToastNotification notification, IMapper mapper, IRepository<UserWallet> userWalletRepo, IRepository<TransactionHistory> transactionHistoryRepo, IWebHostEnvironment environment, IWalletService walletService, ApplicationDbContext dbContext)
         {
             this.userManager = userManager;
             this.notification = notification;
@@ -46,6 +51,8 @@ namespace Admin.Controllers
             this.userWalletRepo = userWalletRepo;
             this.transactionHistoryRepo = transactionHistoryRepo;
             this.environment = environment;
+            this.walletService = walletService;
+            this.dbContext = dbContext;
         }
 
         public IActionResult Add()
@@ -59,7 +66,6 @@ namespace Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(UserDto dto)
         {
-            // تبدیل DTO به Entity
             var model = dto.ToEntity(mapper);
 
             // ذخیره تصویر کاربر
@@ -72,46 +78,60 @@ namespace Admin.Controllers
                 );
             }
 
-            // ساخت کاربر
-            var status = await userManager.CreateAsync(model, dto.Password);
+            // شروع تراکنش مشترک دیتابیس
+            await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            if (!status.Succeeded)
+            try
             {
-                foreach (var error in status.Errors)
+                // ساخت کاربر
+                var status = await userManager.CreateAsync(model, dto.Password);
+
+                if (!status.Succeeded)
                 {
-                    ModelState.AddModelError("", error.Description);
+                    await transaction.RollbackAsync();
+
+                    foreach (var error in status.Errors)
+                        ModelState.AddModelError("", error.Description);
+
+                    return View(dto);
                 }
+
+                // اختصاص نقش به کاربر
+                var roleStatus = await userManager.AddToRoleAsync(
+                    model,
+                    dto.Role.ToString()
+                );
+
+                if (!roleStatus.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+
+                    foreach (var error in roleStatus.Errors)
+                        ModelState.AddModelError("", error.Description);
+
+                    return View(dto);
+                }
+
+                // ساخت کیف پول با موجودی صفر
+                await walletService.CreateWalletAsync(model.Id);
+
+                // تأیید نهایی تمام عملیات
+                await transaction.CommitAsync();
+
+                notification.AddSuccessToastMessage("کاربر با موفقیت ثبت شد");
+                return RedirectToAction("List");
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+
+                ModelState.AddModelError(
+                    "",
+                    "ثبت کاربر انجام نشد. لطفاً دوباره تلاش کنید."
+                );
 
                 return View(dto);
             }
-
-            // اختصاص نقش به کاربر
-            var roleStatus = await userManager.AddToRoleAsync(
-                model,
-                dto.Role.ToString());
-
-            if (!roleStatus.Succeeded)
-            {
-                foreach (var error in roleStatus.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                return View(dto);
-            }
-
-            // ساخت کیف پول کاربر
-            var userwallet = new UserWallet()
-            {
-                Amount = 10000,
-                UserId = model.Id,
-            };
-
-            userWalletRepo.Add(userwallet);
-
-            notification.AddSuccessToastMessage("کاربر با موفقیت ثبت شد");
-
-            return RedirectToAction("List");
         }
 
         public async Task<IActionResult> List()
@@ -134,15 +154,6 @@ namespace Admin.Controllers
 
             return View(model);
         }
-
-        //public async Task<IActionResult> List()
-        //{
-        //    var model = await userManager.Users
-        //        .ProjectTo<UserDto>(mapper.ConfigurationProvider)
-        //        .ToListAsync();
-
-        //    return View(model);
-        //}
 
         public async Task<IActionResult> Update(Guid Id)
         {
@@ -168,22 +179,6 @@ namespace Admin.Controllers
 
             return View(model);
         }
-
-
-        //public async Task<IActionResult> Update(Guid Id)
-        //{
-        //    var model = await userManager.Users
-        //        .ProjectTo<UserDto>(mapper.ConfigurationProvider)
-        //        .FirstOrDefaultAsync(x => x.Id == Id);
-
-        //    if (model == null)
-        //    {
-        //        notification.AddErrorToastMessage("کاربر مورد نظر یافت نشد");
-        //        return RedirectToAction("List");
-        //    }
-
-        //    return View(model);
-        //}
 
 
         [HttpPost]
@@ -268,50 +263,6 @@ namespace Admin.Controllers
             return RedirectToAction("List");
         }
 
-
-        //[HttpPost]
-        //public async Task<IActionResult> Update(UserDto dto)
-        //{
-        //    var model = await userManager.Users
-        //        .FirstOrDefaultAsync(x => x.Id == dto.Id);
-
-        //    if (model == null)
-        //    {
-        //        notification.AddErrorToastMessage("کاربر مورد نظر یافت نشد");
-        //        return RedirectToAction("List");
-        //    }
-
-        //    model.FirstName = dto.FirstName;
-        //    model.LastName = dto.LastName;
-        //    model.PhoneNumber = dto.PhoneNumber;
-        //    model.Email = dto.Email;
-        //    model.UserName = dto.UserName;
-
-        //    if (dto.ImageFile != null)
-        //    {
-        //        //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "UserImages");
-
-        //        model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "CategoryImage", environment.WebRootPath);
-        //    }
-
-        //    var status = await userManager.UpdateAsync(model);
-
-        //    //if (status.Succeeded == false)
-        //    //{
-        //    //    notification.AddErrorToastMessage("ویرایش کاربر با خطا مواجه شد");
-        //    //    return View(dto);
-        //    //}
-
-        //    if (!status.Succeeded)
-        //    {
-        //        notification.AddErrorToastMessage("ویرایش کاربر با خطا مواجه شد");
-        //        return View(dto);
-        //    }
-
-        //    notification.AddSuccessToastMessage("کاربر با موفقیت ویرایش شد");
-
-        //    return RedirectToAction("List");
-        //}
 
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
@@ -483,20 +434,6 @@ namespace Admin.Controllers
 
                 return View();
             }
-
-
-            //if (!status.Succeeded)
-            //{
-            //    foreach (var error in status.Errors)
-            //    {
-            //        notification.AddErrorToastMessage(
-            //            $"{error.Code}: {error.Description}");
-            //    }
-
-            //    return View(dto);
-            //}
-
-
 
             notification.AddSuccessToastMessage("تغییر رمز عبور با موفقیت انجام شد");
 

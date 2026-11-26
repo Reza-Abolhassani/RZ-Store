@@ -5,10 +5,9 @@ using WebFramework.Api;
 
 namespace Admin.Models
 {
-    public class UserWalletDto : BaseDto<UserWalletDto,UserWallet>
+    public class UserWalletDto : BaseDto<UserWalletDto, UserWallet>
     {
-
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public Guid UserId { get; set; }
         public List<UserDto> users { get; set; }
     }

@@ -39,15 +39,7 @@ namespace Admin.Controllers
             _context = context;
         }
 
-        //public async Task<IActionResult> Add()
-        //{
-        //    var model = new OrderDto();
-
-        //    model.Users = await userManager.Users.ProjectTo<UserDto>(mapper.ConfigurationProvider)
-        //        .ToListAsync();
-
-        //    return View(model);
-        //}
+        
 
         public async Task<IActionResult> Add()
         {
@@ -59,19 +51,7 @@ namespace Admin.Controllers
 
             return View(model);
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Add(OrderDto dto)
-        //{
-        //    var model = dto.ToEntity(mapper);
-
-        //    model.CreationDateTime = DateTime.Now;
-
-        //    OrderRepo.Add(model);
-
-        //    notification.AddSuccessToastMessage("سفارش ثبت شد لطفا اقلام رو اضافه کنید");
-
-        //    return RedirectToAction("List");
-        //}
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(OrderDto dto)
@@ -138,13 +118,7 @@ namespace Admin.Controllers
             return View(model);
         }
 
-        //public async Task<IActionResult> List()
-        //{
-        //    var model = await OrderRepo.TableNoTracking.ProjectTo<OrderDto>(mapper.ConfigurationProvider)
-        //        .ToListAsync();
-
-        //    return View(model);
-        //}
+        
 
         public async Task<IActionResult> Update(Guid Id)
         {
@@ -165,28 +139,7 @@ namespace Admin.Controllers
             return View(model);
         }
 
-        //public async Task<IActionResult> Update(Guid Id)
-        //{
-        //    var model = await OrderRepo.AllTableNoTracking
-        //        .ProjectTo<OrderDto>(mapper.ConfigurationProvider)
-        //        .FirstOrDefaultAsync(x => x.Id == Id);
-
-        //    if (model == null)
-        //    {
-        //        notification. AddErrorToastMessage("سفارش مورد نظر یافت نشد");
-        //        return RedirectToAction("List");
-
-        //    }
-
-
-        //    var users = await userManager.Users
-        //        .ProjectTo<UserDto>(mapper.ConfigurationProvider)
-        //        .ToListAsync();
-
-        //    model.Users = users;
-
-        //    return View(model);
-        //}
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -283,34 +236,7 @@ namespace Admin.Controllers
             return RedirectToAction("List");
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Update(OrderDto dto)
-        //{
-        //    if (dto.Id != Guid.Empty)
-        //    {
-        //        var model = await OrderRepo.AllTableNoTracking//دریافت سفارش از دیتابیس
-        //            .FirstOrDefaultAsync(x => x.Id == dto.Id);
-
-        //        if (model == null)//بررسی وجود سفارش
-        //        {
-        //            notification.AddErrorToastMessage("سفارش مورد نظر یافت نشد");
-        //            return RedirectToAction("List");
-        //        }
-
-        //        model.UserId = dto.UserId;//مقداردهی Propertyها
-        //        model.Code = dto.Code;
-        //        model.IsPaid = dto.IsPaid;
-        //        model.Shipping = dto.Shipping;
-        //        model.ShippingPrice = dto.ShippingPrice;
-        //        model.RawPrice = dto.RawPrice;
-        //        model.Discount = dto.Discount;
-        //        model.Total = dto.Total;
-
-        //        OrderRepo.Update(model);//ذخیره تغییرات
-        //    }
-
-        //    return RedirectToAction("List");
-        //}
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -18,11 +18,13 @@ namespace Entities
         public DateTimeOffset? LastLoginDate { get; set; }
         public DateTime RegisterDate { get; set; }
         public bool IsActive { get; set; }
-        public long WalletAmount { get; set; }
+        
         public string ImageUrl { get; set; }
 
 
         public ICollection<UserAddress> Addresses { get; set; }
+
+        public UserWallet UserWallet { get; set; }
 
         //public GenderType Gender { get; set; }
 

@@ -57,7 +57,7 @@ namespace Admin.Controllers
 
             if (dto.ImageFile != null)
             {
-                //model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImages");
+                
 
                 model.ImageUrl = FileTool.SaveFile(dto.ImageFile, "ProductImage", SharedImagesPath);
             }
