@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 
+using Entities.Payments;
+
 namespace Entities
 {
     public class User : IdentityUser<Guid>, IEntity<Guid>
@@ -25,6 +27,9 @@ namespace Entities
         public ICollection<UserAddress> Addresses { get; set; }
 
         public UserWallet UserWallet { get; set; }
+
+        public ICollection<Payment> Payments { get; set; }
+    = new List<Payment>();
 
         //public GenderType Gender { get; set; }
 

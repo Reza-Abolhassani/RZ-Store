@@ -14,6 +14,6 @@ namespace Entities
 
         public int count { get; set; }
 
-        public int TotalPrice { get; set; }
+        public long TotalPrice { get; set; }
     }
 }

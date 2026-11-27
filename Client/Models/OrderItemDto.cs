@@ -10,9 +10,9 @@ namespace Client.Models
 
 
         public int Count { get; set; }
-        public int Discount { get; set; }
-        public int Total { get; set; } //mablaghe koll = count * productprice => totalprice
-        public int ProductPrice { get; set; }
+        public long Discount { get; set; }
+        public long Total { get; set; } //mablaghe koll = count * productprice => totalprice
+        public long ProductPrice { get; set; }
         public Guid OrderId { get; set; }
         public List<OrderDto> orders { get; set; }
 

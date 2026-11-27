@@ -10,6 +10,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Services.Interfaces;
+
 using Data;
 
 namespace Client.Controllers
@@ -31,7 +33,9 @@ namespace Client.Controllers
 
         private readonly ApplicationDbContext _context;
 
-        public ShopCartController(IRepository<ShopCart> shopCartRepo, IRepository<ShopCardItem> shopCardItemRepo, IRepository<Product> productRepo, UserManager<User> userManager, IToastNotification notification, IRepository<ShippingType> shippingTypeRepo, IRepository<UserAddress> userAddressRepo, IRepository<Order> orderRepo, IRepository<OrderItem> orderItemRepo, ApplicationDbContext context)
+        private readonly IPaymentService _paymentService;
+
+        public ShopCartController(IRepository<ShopCart> shopCartRepo, IRepository<ShopCardItem> shopCardItemRepo, IRepository<Product> productRepo, UserManager<User> userManager, IToastNotification notification, IRepository<ShippingType> shippingTypeRepo, IRepository<UserAddress> userAddressRepo, IRepository<Order> orderRepo, IRepository<OrderItem> orderItemRepo, ApplicationDbContext context, IPaymentService paymentService)
         {
             ShopCartRepo = shopCartRepo;
             ShopCardItemRepo = shopCardItemRepo;
@@ -43,6 +47,7 @@ namespace Client.Controllers
             OrderRepo = orderRepo;
             OrderItemRepo = orderItemRepo;
             _context = context;
+            _paymentService = paymentService;
         }
 
         [HttpPost]
@@ -63,6 +68,20 @@ namespace Client.Controllers
             if (user == null)
             {
                 return RedirectToAction("Login", "ClientLogin");
+            }
+
+            var callbackUrl = Url.Action(
+                "Callback",
+                "Payment",
+                null,
+                Request.Scheme);
+
+            if (string.IsNullOrWhiteSpace(callbackUrl))
+            {
+                notification.AddErrorToastMessage(
+                    "ساخت آدرس بازگشت از درگاه پرداخت امکان‌پذیر نبود.");
+
+                return RedirectToAction("Index", "Home");
             }
 
 
@@ -113,9 +132,9 @@ namespace Client.Controllers
                 return RedirectToAction("ShopCart", "ShopCart");
             }
 
-            int rawPrice = product.RawPrice * count;
-            int totalPrice = product.Total * count;
-            int discountPrice = rawPrice - totalPrice;
+            long rawPrice = product.RawPrice * count;
+            long totalPrice = product.Total * count;
+            long discountPrice = rawPrice - totalPrice;
 
             var shopCartItem = new ShopCardItem()
             {
@@ -195,9 +214,9 @@ namespace Client.Controllers
             }
 
             // محاسبه قیمت قبلی
-            int oldRawPrice = product.RawPrice * item.count;
-            int oldTotalPrice = item.TotalPrice;
-            int oldDiscountPrice = oldRawPrice - oldTotalPrice;
+            long oldRawPrice = product.RawPrice * item.count;
+            long oldTotalPrice = item.TotalPrice;
+            long oldDiscountPrice = oldRawPrice - oldTotalPrice;
 
             // حذف قیمت قبلی از جمع سبد
             shopCart.TotalRawPrice -= oldRawPrice;
@@ -205,9 +224,9 @@ namespace Client.Controllers
             shopCart.DiscountPrice -= oldDiscountPrice;
 
             // محاسبه قیمت جدید
-            int newRawPrice = product.RawPrice * count;
-            int newTotalPrice = product.Total * count;
-            int newDiscountPrice = newRawPrice - newTotalPrice;
+            long newRawPrice = product.RawPrice * count;
+            long newTotalPrice = product.Total * count;
+            long newDiscountPrice = newRawPrice - newTotalPrice;
 
             // تغییر تعداد و قیمت آیتم
             item.count = count;
@@ -490,8 +509,8 @@ namespace Client.Controllers
             }
 
             // محاسبه مبلغ آیتم
-            int rawPrice = product.RawPrice * item.count;
-            int discountPrice = rawPrice - item.TotalPrice;
+            long rawPrice = product.RawPrice * item.count;
+            long discountPrice = rawPrice - item.TotalPrice;
 
             // کم کردن مبالغ از سبد خرید
             shopCart.TotalRawPrice -= rawPrice;
@@ -526,6 +545,21 @@ namespace Client.Controllers
             if (user == null)
             {
                 return RedirectToAction("Login", "ClientLogin");
+            }
+
+            // ساخت آدرس بازگشت از درگاه پرداخت
+            var callbackUrl = Url.Action(
+                "Callback",
+                "Payment",
+                null,
+                Request.Scheme);
+
+            if (string.IsNullOrWhiteSpace(callbackUrl))
+            {
+                notification.AddErrorToastMessage(
+                    "ساخت آدرس بازگشت از درگاه پرداخت امکان‌پذیر نبود.");
+
+                return RedirectToAction("Index", "Home");
             }
 
             // بررسی انتخاب آدرس توسط مشتری
@@ -582,8 +616,6 @@ namespace Client.Controllers
                 return RedirectToAction("ShopCart");
             }
 
-            
-
             // ایجاد کد سفارش
             var orderCode = "RZ-" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
@@ -614,9 +646,9 @@ namespace Client.Controllers
             OrderRepo.Add(order);
 
             // متغیرهای محاسبه مبلغ نهایی سفارش
-            int totalRawPrice = 0;
-            int totalDiscount = 0;
-            int totalProductsPrice = 0;
+            long totalRawPrice = 0;
+            long totalDiscount = 0;
+            long totalProductsPrice = 0;
 
             // پیمایش محصولات سبد خرید و ثبت اقلام سفارش
             foreach (var cartItem in cartItems)
@@ -655,11 +687,11 @@ namespace Client.Controllers
                 }
 
                 // محاسبه مبلغ تخفیف یک واحد محصول
-                int discountPerUnit = (int)(
+                long discountPerUnit = (long)(
                     product.RawPrice * product.Discount / 100m);
 
                 // محاسبه قیمت نهایی یک واحد محصول
-                int expectedTotal = product.RawPrice - discountPerUnit;
+                long expectedTotal = product.RawPrice - discountPerUnit;
 
                 // بررسی تطابق قیمت نهایی با قیمت و تخفیف
                 if (product.Total != expectedTotal)
@@ -717,16 +749,47 @@ namespace Client.Controllers
 
             ShopCartRepo.Update(shopCart, saveNow: false);
 
-            // ذخیره تغییرات پاک کردن سبد خرید
+            // ذخیره تغییرات دیتابیس
             await _context.SaveChangesAsync();
 
-            // نهایی کردن تمام تغییرات دیتابیس
+            // نهایی کردن تراکنش دیتابیس
             await transaction.CommitAsync();
 
-            notification.AddSuccessToastMessage(
-                "سفارش شما با موفقیت ثبت شد");
+            // ارسال درخواست پرداخت به درگاه
+            var paymentResult = await _paymentService.CreateOrderPaymentAsync(
+                order.Id,
+                user.Id,
+                callbackUrl);
 
-            return RedirectToAction("ShopCart");
+            // بررسی آدرس پرداخت
+            if (!string.IsNullOrWhiteSpace(paymentResult.PaymentUrl))
+            {
+                if (Uri.TryCreate(
+                    paymentResult.PaymentUrl,
+                    UriKind.Absolute,
+                    out var paymentUri) &&
+                    (paymentUri.Scheme == Uri.UriSchemeHttps ||
+                     paymentUri.Scheme == Uri.UriSchemeHttp))
+                {
+                    return Redirect(paymentUri.ToString());
+                }
+
+                notification.AddErrorToastMessage(
+                    "آدرس درگاه پرداخت معتبر نیست.");
+            }
+            else if (paymentResult.IsSuccess)
+            {
+                notification.AddSuccessToastMessage(
+                    paymentResult.Message ?? "این سفارش قبلاً پرداخت شده است.");
+            }
+            else
+            {
+                notification.AddErrorToastMessage(
+                    paymentResult.Message ??
+                    "در حال حاضر امکان شروع پرداخت وجود ندارد. وضعیت سفارش حفظ شده است.");
+            }
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

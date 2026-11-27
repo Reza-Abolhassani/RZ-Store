@@ -12,8 +12,21 @@ namespace Services.Interfaces
 
         Task<long> GetBalanceAsync(Guid userId);
 
-        Task DepositAsync(Guid userId, long amount, string description);
+        Task DepositAsync(
+            Guid userId,
+            long amount,
+            string description,
+            Guid? paymentId = null);
 
-        Task WithdrawAsync(Guid userId, long amount, string description);
+        Task WithdrawAsync(
+            Guid userId,
+            long amount,
+            string description,
+            Guid? paymentId = null);
+
+        Task RefundAsync(
+            Guid userId,
+            Guid paymentId,
+            string description);
     }
 }

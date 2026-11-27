@@ -12,11 +12,11 @@ namespace Client.Dto
 
         public string ImageUrl { get; set; }
 
-        public int RawPrice { get; set; }
+        public long RawPrice { get; set; }
 
-        public int Price { get; set; }
+        public long Price { get; set; }
 
-        public int TotalPrice { get; set; }
+        public long TotalPrice { get; set; }
 
         public int count { get; set; }
     }

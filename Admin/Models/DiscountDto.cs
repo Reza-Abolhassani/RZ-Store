@@ -14,8 +14,8 @@ namespace Admin.Models
         [Range(0, 100, ErrorMessage = "درصد تخفیف باید بین صفر تا صد باشد")]
         public int Percentage { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "مبلغ تخفیف معتبر نیست")]
-        public int Amount { get; set; }
+        [Range(0L, long.MaxValue, ErrorMessage = "مبلغ تخفیف معتبر نیست")]
+        public long Amount { get; set; }
 
         public DateTime Startdate { get; set; }
 
@@ -66,19 +66,4 @@ namespace Admin.Models
 }
 
 
-//using Entities;
-//using System;
-//using WebFramework.Api;
 
-//namespace Admin.Models
-//{
-//    public class DiscountDto : BaseDto<DiscountDto, Discount>
-//    {
-//        public string Code { get; set; }
-//        public int Percentage { get; set; }
-//        public int Amount { get; set; }
-//        public DateTime Startdate { get; set; }
-//        public DateTime EndDate { get; set; }
-//        public bool IsActive { get; set; }
-//    }
-//}

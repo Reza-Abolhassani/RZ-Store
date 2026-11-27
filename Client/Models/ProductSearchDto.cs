@@ -6,8 +6,8 @@ namespace Client.Models
     public class ProductSearchDto
     {
 
-        public int FromPrice { get; set; }
-        public int ToPrice { get; set; }
+        public long FromPrice { get; set; }
+        public long ToPrice { get; set; }
         public string Text { get; set; }
         public Guid CategoryId { get; set; }
 

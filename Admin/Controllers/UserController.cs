@@ -305,44 +305,31 @@ namespace Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> walletcharge(UserWalletDto dto)
         {
-            if (dto == null)
+            if (dto == null || dto.Amount <= 0)
             {
-                notification.AddErrorToastMessage("اطلاعات نامعتبر است");
+                notification.AddErrorToastMessage("مبلغ باید بیشتر از صفر باشد");
                 return RedirectToAction("List");
             }
 
-            var wallet = await userWalletRepo.TableNoTracking
-                .FirstOrDefaultAsync(x => x.Id == dto.Id);
-
-            if (wallet == null)
+            try
             {
-                notification.AddErrorToastMessage("کیف پول پیدا نشد");
-                return RedirectToAction("List");
+                await walletService.DepositAsync(
+                    dto.UserId,
+                    dto.Amount,
+                    "شارژ کیف پول توسط مدیر"
+                );
+
+                notification.AddSuccessToastMessage(
+                    "کیف پول با موفقیت شارژ شد"
+                );
             }
-
-            if (dto.Amount == 0)
+            catch (Exception ex)
             {
-                notification.AddErrorToastMessage("مبلغ باید غیر از صفر باشد");
-                return View(dto);
+                notification.AddErrorToastMessage(ex.Message);
             }
-
-            wallet.Amount += dto.Amount;
-
-            userWalletRepo.Update(wallet);
-
-            var tr = new TransactionHistory()
-            {
-                Amount = dto.Amount,
-                CreationDateTime = DateTime.Now,
-                Description = dto.Amount < 0 ? "کسر از کیف پول" : "شارژ کیف پول",
-                UserId = dto.UserId
-            };
-
-            transactionHistoryRepo.Add(tr);
-
-            notification.AddSuccessToastMessage("عملیات کیف پول با موفقیت انجام شد");
 
             return RedirectToAction("List");
         }

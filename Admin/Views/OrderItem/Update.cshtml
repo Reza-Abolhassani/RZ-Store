@@ -176,9 +176,9 @@
 
 @section script {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+                document.addEventListener("DOMContentLoaded", function () {
 
-            const price = Number(document.getElementById("productPrice").value);
+            const price = BigInt(document.getElementById("productPrice").value || "0");
             const count = document.getElementById("count");
             const discount = document.getElementById("discount");
 
@@ -187,18 +187,19 @@
             const finalTotal = document.getElementById("finalTotal");
 
             function formatNumber(value) {
-                return Math.round(value).toLocaleString("en-US");
+                return value.toLocaleString("en-US");
             }
 
             function calculate() {
 
-                let quantity = Number(count.value) || 0;
-                let percent = Number(discount.value) || 0;
+                let quantity = BigInt(count.value || "0");
+                let percent = BigInt(discount.value || "0");
 
-                percent = Math.min(100, Math.max(0, percent));
+                percent = percent < 0n ? 0n : percent;
+                percent = percent > 100n ? 100n : percent;
 
                 let raw = price * quantity;
-                let discountValue = Math.floor(raw * percent / 100);
+                let discountValue = (raw * percent) / 100n;
                 let total = raw - discountValue;
 
                 rawPrice.value = formatNumber(raw);

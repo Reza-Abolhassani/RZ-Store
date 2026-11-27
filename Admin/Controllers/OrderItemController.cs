@@ -108,7 +108,7 @@ namespace Admin.Controllers
             var rawPrice = product.Total * dto.Count;
 
             // محاسبه مبلغ تخفیف
-            var discountAmount = (int)((long)rawPrice * dto.Discount / 100);
+            long discountAmount = rawPrice * dto.Discount / 100;
 
             // محاسبه مبلغ نهایی آیتم
             model.Total = rawPrice - discountAmount;
@@ -256,14 +256,14 @@ namespace Admin.Controllers
             model.ProductPrice = product.Total;
             model.Discount = dto.Discount;
 
-            model.Total = (int)(newRawPrice - newDiscountAmount);
+            model.Total = newRawPrice - newDiscountAmount;
 
             // اصلاح مبالغ سفارش
-            order.RawPrice = (int)(
-                order.RawPrice - oldRawPrice + newRawPrice);
+            order.RawPrice =
+    order.RawPrice - oldRawPrice + newRawPrice;
 
-            order.Discount = (int)(
-                order.Discount - oldDiscountAmount + newDiscountAmount);
+            order.Discount =
+                order.Discount - oldDiscountAmount + newDiscountAmount;
 
             order.Total = order.RawPrice
                           - order.Discount
@@ -312,8 +312,8 @@ namespace Admin.Controllers
             long discountAmount = rawPrice * model.Discount / 100;
 
             // اصلاح مبالغ سفارش
-            order.RawPrice = (int)(order.RawPrice - rawPrice);
-            order.Discount = (int)(order.Discount - discountAmount);
+            order.RawPrice -= rawPrice;
+            order.Discount -= discountAmount;
 
             order.Total = order.RawPrice
                           - order.Discount

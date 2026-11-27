@@ -8,7 +8,7 @@ namespace Entities
     {
         public string Code { get; set; }
         public int Percentage { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public DateTime Startdate { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsActive { get; set; }

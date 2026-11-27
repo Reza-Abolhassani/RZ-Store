@@ -7,6 +7,6 @@ namespace Entities
     public class ShippingType : BaseEntity
     {
         public string Name { get; set; }
-        public int Price { get; set; }
+        public long Price { get; set; }
     }
 }

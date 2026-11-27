@@ -9,6 +9,6 @@ namespace Entities
         public Guid ProductId { get; set; }
         public Product Product { get; set; }
         public int DiscountPercent { get; set; }
-        public int ToatalPrice { get; set; }
+        public long ToatalPrice { get; set; }
     }
 }

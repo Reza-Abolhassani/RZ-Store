@@ -9,21 +9,6 @@
     var finalPrice = Model.ShopCart.TotalPrice + shippingPrice;
 }
 
-
-
-
-
-
-<!-- Loader -->
-<!-- <div id="preloader">
-    <div id="status">
-        <div class="spinner">
-            <div class="double-bounce1"></div>
-            <div class="double-bounce2"></div>
-        </div>
-    </div>
-</div> -->
-<!-- Loader -->
 <!-- Hero Start -->
 <section class="bg-half bg-light d-table w-100">
     <div class="container">
@@ -353,30 +338,32 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-        const shippingSelect = document.querySelector('select[name="ShippingTypeId"]');
+    const shippingSelect = document.querySelector('select[name="ShippingTypeId"]');
+    const shippingPriceElement = document.getElementById("shippingPrice");
+    const finalPriceElement = document.getElementById("finalPrice");
 
-        const shippingPriceElement = document.getElementById("shippingPrice");
+    const cartTotalPrice = BigInt("@Model.ShopCart.TotalPrice");
 
-        const finalPriceElement = document.getElementById("finalPrice");
+    function updatePrice() {
 
-        const cartTotalPrice = @Model.ShopCart.TotalPrice;
+        if (!shippingSelect || shippingSelect.options.length === 0)
+            return;
 
-        function updatePrice() {
+        const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
 
-            const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
+        const shippingPrice = BigInt(selectedOption.dataset.price || "0");
 
-            const shippingPrice = Number(selectedOption.dataset.price);
+        const finalPrice = cartTotalPrice + shippingPrice;
 
-            const finalPrice = cartTotalPrice + shippingPrice;
+        shippingPriceElement.innerText = shippingPrice.toLocaleString('en-US');
 
-            shippingPriceElement.innerText = shippingPrice.toLocaleString('en-US');
+        finalPriceElement.innerText = finalPrice.toLocaleString('en-US');
+    }
 
-            finalPriceElement.innerText = finalPrice.toLocaleString('en-US');
-        }
-
+    if (shippingSelect) {
         shippingSelect.addEventListener("change", updatePrice);
-
         updatePrice();
+    }
     });
 </script>
 

@@ -9,9 +9,9 @@ namespace Entities
         public Guid UserId { get; set; }
 
         public User User { get; set; }
-        public int TotalRawPrice { get; set; }
-        public int TotalPrice { get; set; }
-        public int DiscountPrice { get; set; }
+        public long TotalRawPrice { get; set; }
+        public long TotalPrice { get; set; }
+        public long DiscountPrice { get; set; }
         public ICollection<ShopCardItem> Items { get; set; }
     }
 }

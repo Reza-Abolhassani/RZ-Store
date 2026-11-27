@@ -84,8 +84,8 @@ namespace Data.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ToatalPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("ToatalPrice")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -280,8 +280,8 @@ namespace Data.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -406,8 +406,8 @@ namespace Data.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -626,8 +626,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("CreationDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
+                    b.Property<long>("Discount")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
@@ -641,8 +641,8 @@ namespace Data.Migrations
                     b.Property<string>("Province")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RawPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("RawPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ReceiverName")
                         .HasColumnType("nvarchar(max)");
@@ -653,14 +653,14 @@ namespace Data.Migrations
                     b.Property<string>("Shipping")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ShippingPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("ShippingPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
+                    b.Property<long>("Total")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -688,8 +688,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("CreationDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
+                    b.Property<long>("Discount")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("datetime2");
@@ -700,11 +700,11 @@ namespace Data.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ProductPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("ProductPrice")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
+                    b.Property<long>("Total")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -713,6 +713,159 @@ namespace Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Entities.Payments.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("GatewayAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("LastModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("WalletAmount")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique()
+                        .HasFilter("[OrderId] IS NOT NULL");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments", t =>
+                        {
+                            t.HasCheckConstraint("CK_Payments_Amount_EqualsParts", "[WalletAmount] <= [Amount] AND [GatewayAmount] = [Amount] - [WalletAmount]");
+
+                            t.HasCheckConstraint("CK_Payments_Amount_NonNegative", "[Amount] >= 0");
+
+                            t.HasCheckConstraint("CK_Payments_AtLeastOneAmount", "[WalletAmount] > 0 OR [GatewayAmount] > 0");
+
+                            t.HasCheckConstraint("CK_Payments_GatewayAmount_NonNegative", "[GatewayAmount] >= 0");
+
+                            t.HasCheckConstraint("CK_Payments_Method_Amounts", "([Method] = 0 AND [WalletAmount] > 0 AND [GatewayAmount] = 0) OR ([Method] = 1 AND [WalletAmount] = 0 AND [GatewayAmount] > 0) OR ([Method] = 2 AND [WalletAmount] > 0 AND [GatewayAmount] > 0)");
+
+                            t.HasCheckConstraint("CK_Payments_Type_OrderId", "([Type] = 0 AND [OrderId] IS NOT NULL) OR ([Type] = 1 AND [OrderId] IS NULL)");
+
+                            t.HasCheckConstraint("CK_Payments_WalletAmount_NonNegative", "[WalletAmount] >= 0");
+
+                            t.HasCheckConstraint("CK_Payments_WalletCharge_Method", "[Type] <> 1 OR [Method] = 1");
+                        });
+                });
+
+            modelBuilder.Entity("Entities.Payments.PaymentAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ErrorCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("GatewayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("GatewayRequestId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("LastModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PaymentUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TrackingCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GatewayRequestId")
+                        .IsUnique()
+                        .HasFilter("[GatewayRequestId] IS NOT NULL");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TrackingCode");
+
+                    b.ToTable("PaymentAttempts", t =>
+                        {
+                            t.HasCheckConstraint("CK_PaymentAttempts_Amount_Positive", "[Amount] > 0");
+                        });
                 });
 
             modelBuilder.Entity("Entities.Payments.PaymentLog", b =>
@@ -788,8 +941,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RawPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("RawPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("SKU")
                         .HasColumnType("nvarchar(max)");
@@ -797,8 +950,8 @@ namespace Data.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
+                    b.Property<long>("Total")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -924,8 +1077,8 @@ namespace Data.Migrations
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Used")
                         .HasColumnType("int");
@@ -1031,8 +1184,8 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -1061,8 +1214,8 @@ namespace Data.Migrations
                     b.Property<Guid>("ShopCartId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TotalPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("TotalPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("count")
                         .HasColumnType("int");
@@ -1089,17 +1242,17 @@ namespace Data.Migrations
                     b.Property<DateTime>("CreationDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DiscountPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("DiscountPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TotalPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("TotalPrice")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TotalRawPrice")
-                        .HasColumnType("int");
+                    b.Property<long>("TotalRawPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1323,6 +1476,9 @@ namespace Data.Migrations
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -1334,7 +1490,13 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PaymentId");
+
                     b.HasIndex("UserId");
+
+                    b.HasIndex("PaymentId", "Type")
+                        .IsUnique()
+                        .HasFilter("[PaymentId] IS NOT NULL");
 
                     b.ToTable("TransactionHistories");
                 });
@@ -1756,6 +1918,35 @@ namespace Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Entities.Payments.Payment", b =>
+                {
+                    b.HasOne("Entities.Order", "Order")
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Entities.User", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Entities.Payments.PaymentAttempt", b =>
+                {
+                    b.HasOne("Entities.Payments.Payment", "Payment")
+                        .WithMany("PaymentAttempts")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Payment");
+                });
+
             modelBuilder.Entity("Entities.Payments.PaymentLog", b =>
                 {
                     b.HasOne("Entities.User", "User")
@@ -1852,11 +2043,18 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Entities.TransactionHistory", b =>
                 {
+                    b.HasOne("Entities.Payments.Payment", "Payment")
+                        .WithMany("TransactionHistories")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Payment");
 
                     b.Navigation("User");
                 });
@@ -1939,6 +2137,18 @@ namespace Data.Migrations
                     b.Navigation("Children");
                 });
 
+            modelBuilder.Entity("Entities.Order", b =>
+                {
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("Entities.Payments.Payment", b =>
+                {
+                    b.Navigation("PaymentAttempts");
+
+                    b.Navigation("TransactionHistories");
+                });
+
             modelBuilder.Entity("Entities.ShopCart", b =>
                 {
                     b.Navigation("Items");
@@ -1947,6 +2157,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Entities.User", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("Payments");
 
                     b.Navigation("UserWallet");
                 });

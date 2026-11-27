@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Entities.Payments;
+
 namespace Entities
 {
     public class Order : BaseEntity
@@ -10,15 +12,18 @@ namespace Entities
         public string Code { get; set; }
         public bool IsPaid { get; set; }//pardakht shodeh
         public string Shipping { get; set; }//ravesh ya etelaat sefaresh
-        public int ShippingPrice { get; set; }//hazineye ersal
-        public int RawPrice { get; set; }
-        public int Discount { get; set; }
-        public int Total { get; set; }//Total=rawprice - discount + shippingprice
+        public long ShippingPrice { get; set; }//hazineye ersal
+        public long RawPrice { get; set; }
+        public long Discount { get; set; }
+        public long Total { get; set; }//Total=rawprice - discount + shippingprice
 
         public OrderStatus Status { get; set; } = OrderStatus.NotPayed;
 
         public Guid UserId { get; set; }
         public User User { get; set; }
+
+        public ICollection<Payment> Payments { get; set; }
+    = new List<Payment>();
 
         // اطلاعات گیرنده سفارش
         public string ReceiverName { get; set; }

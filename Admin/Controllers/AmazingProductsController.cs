@@ -130,8 +130,8 @@ namespace Admin.Controllers
 
             var model = mapper.Map<AmazingProduct>(dto);
 
-            model.ToatalPrice = (int)Math.Round(
-                product.Total * (100m - dto.DiscountPercent) / 100m);
+            model.ToatalPrice = (long)Math.Round(
+    product.Total * (100m - dto.DiscountPercent) / 100m);
 
             amazingProductRepo.Add(model);
 
@@ -230,8 +230,8 @@ namespace Admin.Controllers
             model.ProductId = dto.ProductId;
             model.DiscountPercent = dto.DiscountPercent;
 
-            model.ToatalPrice = (int)Math.Round(
-                product.Total * (100m - dto.DiscountPercent) / 100m);
+            model.ToatalPrice = (long)Math.Round(
+    product.Total * (100m - dto.DiscountPercent) / 100m);
 
             amazingProductRepo.Update(model);
 

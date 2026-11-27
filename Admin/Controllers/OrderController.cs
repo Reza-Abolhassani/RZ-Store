@@ -204,12 +204,7 @@ namespace Admin.Controllers
                 discountAmount += itemRawPrice * item.Discount / 100;
             }
 
-            // جلوگیری از ثبت مبالغ خارج از محدوده int
-            if (rawPrice > int.MaxValue || discountAmount > int.MaxValue)
-            {
-                notification.AddErrorToastMessage("مبلغ سفارش بیش از حد مجاز است");
-                return RedirectToAction("Update", new { Id = dto.Id });
-            }
+            
 
             // اطلاعات اصلی سفارش
             model.UserId = dto.UserId;
@@ -222,8 +217,8 @@ namespace Admin.Controllers
             model.ShippingPrice = dto.ShippingPrice;
 
             // مبالغ محاسبه‌شده از روی آیتم‌های سفارش
-            model.RawPrice = (int)rawPrice;
-            model.Discount = (int)discountAmount;
+            model.RawPrice = rawPrice;
+            model.Discount = discountAmount;
 
             model.Total = model.RawPrice
                           - model.Discount

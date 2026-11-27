@@ -23,25 +23,29 @@
                 });
             }
 
-            // محاسبه خودکار قیمت نهایی
-            const rawPriceInput = document.getElementById("RawPrice");
-            const discountInput = document.getElementById("Discount");
-            const totalInput = document.getElementById("Total");
+                    // محاسبه خودکار قیمت نهایی
+        const rawPriceInput = document.getElementById("RawPrice");
+        const discountInput = document.getElementById("Discount");
+        const totalInput = document.getElementById("Total");
 
-            function calculateTotal() {
-                const rawPrice = parseFloat(rawPriceInput.value) || 0;
-                let discount = parseFloat(discountInput.value) || 0;
+        function calculateTotal() {
 
-                if (discount < 0) discount = 0;
-                if (discount > 100) discount = 100;
+            let rawPrice = BigInt(rawPriceInput.value || "0");
+            let discount = BigInt(discountInput.value || "0");
 
-                const total = rawPrice - (rawPrice * discount / 100);
+            if (discount < 0n) discount = 0n;
+            if (discount > 100n) discount = 100n;
 
-                totalInput.value = Math.round(total);
-            }
+            const discountAmount = (rawPrice * discount) / 100n;
+            const total = rawPrice - discountAmount;
 
-            rawPriceInput.addEventListener("input", calculateTotal);
-            discountInput.addEventListener("input", calculateTotal);
+            totalInput.value = total.toString();
+        }
+
+        rawPriceInput.addEventListener("input", calculateTotal);
+        discountInput.addEventListener("input", calculateTotal);
+
+        calculateTotal();
 
         });
     </script>

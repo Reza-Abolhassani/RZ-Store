@@ -24,7 +24,7 @@ namespace Admin.Models
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string CustomerName { get; set; }
-        public int Total { get; set; }
+        public long Total { get; set; }
         public bool IsPaid { get; set; }
         public DateTime CreationDateTime { get; set; }
     }

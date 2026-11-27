@@ -21,7 +21,7 @@ namespace Client.Models
 
 
 
-        public int TotalPrice { get; set; }
+        public long TotalPrice { get; set; }
         public bool Payed { get; set; }
         public DateTime CreationDate { get; set; }
         public List<OrderItemDto> Orderitems { get; set; }

@@ -1,7 +1,5 @@
 ﻿using Autofac;
-
 using Common;
-
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,12 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using Microsoft.Extensions.FileProviders;
-using System.IO;
-
+using Services.Payments;
 using System;
-
+using System.IO;
 using WebFramework.Configuration;
 using WebFramework.CustomMapping;
 using WebFramework.Swagger;
@@ -36,6 +32,9 @@ namespace Client
         {
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 
+            services.Configure<ZarinPalSettings>(
+                Configuration.GetSection(nameof(ZarinPalSettings)));
+
             services.AddSmsSender(_siteSetting);
 
             services.AddCors(options => options.AddDefaultPolicy(builder =>
@@ -52,6 +51,8 @@ namespace Client
             services.InitializeAutoMapper();
 
             services.AddDbContext(Configuration);
+
+            services.AddHttpClient();
 
             services.AddCustomIdentity(_siteSetting.IdentitySettings);
             services.AddAuthorization();
