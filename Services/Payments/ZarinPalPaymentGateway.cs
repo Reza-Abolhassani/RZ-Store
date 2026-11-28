@@ -117,14 +117,22 @@ namespace Services.Payments
 
             var result = await SendRequestAsync(url, body);
 
-            bool isSuccess =
-                (result.Code == 100 || result.Code == 101) &&
+            bool hasSuccessfulCode =
+                result.Code == 100 || result.Code == 101;
+
+            bool hasTrackingCode =
                 !string.IsNullOrWhiteSpace(result.TrackingCode);
+
+            bool isSuccess = hasSuccessfulCode && hasTrackingCode;
+
+            bool isIndeterminate =
+                result.IsIndeterminate ||
+                (hasSuccessfulCode && !hasTrackingCode);
 
             return new GatewayPaymentVerificationResult
             {
                 IsSuccess = isSuccess,
-                IsIndeterminate = result.IsIndeterminate,
+                IsIndeterminate = isIndeterminate,
                 TrackingCode = result.TrackingCode,
                 ErrorCode = result.ErrorCode,
                 ErrorMessage = isSuccess
@@ -258,13 +266,26 @@ namespace Services.Payments
                         string? errorCode = GetErrorCode(root, 0);
                         string? errorMessage = GetErrorMessage(root);
 
+                        // کد خطای عددی و منفی، به‌تنهایی
+                        // برای قطعی دانستن شکست کافی نیست.
+                        // تا زمان مشخص شدن وضعیت کد، نامشخص می‌ماند.
+                        bool hasValidErrorCode =
+                            int.TryParse(
+                                errorCode,
+                                NumberStyles.Integer,
+                                CultureInfo.InvariantCulture,
+                                out int parsedErrorCode) &&
+                            parsedErrorCode < 0;
+
                         return new ZarinPalResponse
                         {
                             Code = 0,
-                            IsIndeterminate = false,
+                            IsIndeterminate = true,
                             ErrorCode = errorCode,
                             ErrorMessage = errorMessage ??
-                                "زرین‌پال درخواست را با خطا رد کرد."
+                                (hasValidErrorCode
+                                    ? "زرین‌پال خطا برگرداند؛ وضعیت نهایی درخواست نیازمند بررسی است."
+                                    : "ساختار یا کد خطای زرین‌پال معتبر نیست؛ نتیجه نامشخص است.")
                         };
                     }
                 }
@@ -357,44 +378,56 @@ namespace Services.Payments
                 }
 
                 if (hasErrorItem &&
-                    errorItem.TryGetProperty("code", out var errorCode))
+                    errorItem.TryGetProperty("code", out var errorCode) &&
+                    errorCode.ValueKind == JsonValueKind.Number &&
+                    errorCode.TryGetInt32(out int parsedErrorCode))
                 {
-                    return errorCode.ToString();
+                    return parsedErrorCode.ToString(
+                        CultureInfo.InvariantCulture);
                 }
             }
 
-            return code.ToString(CultureInfo.InvariantCulture);
+            return code != 0
+                ? code.ToString(CultureInfo.InvariantCulture)
+                : null;
         }
 
         private static string? GetErrorMessage(JsonElement root)
         {
-            if (root.ValueKind == JsonValueKind.Object &&
-                root.TryGetProperty("errors", out var errors))
+            if (root.ValueKind != JsonValueKind.Object ||
+                !root.TryGetProperty("errors", out var errors))
             {
-                JsonElement errorItem = default;
-                bool hasErrorItem = false;
-
-                if (errors.ValueKind == JsonValueKind.Object)
-                {
-                    errorItem = errors;
-                    hasErrorItem = true;
-                }
-                else if (errors.ValueKind == JsonValueKind.Array &&
-                         errors.GetArrayLength() > 0 &&
-                         errors[0].ValueKind == JsonValueKind.Object)
-                {
-                    errorItem = errors[0];
-                    hasErrorItem = true;
-                }
-
-                if (hasErrorItem &&
-                    errorItem.TryGetProperty("message", out var message))
-                {
-                    return message.ToString();
-                }
+                return null;
             }
 
-            return null;
+            JsonElement errorItem = default;
+            bool hasErrorItem = false;
+
+            if (errors.ValueKind == JsonValueKind.Object)
+            {
+                errorItem = errors;
+                hasErrorItem = true;
+            }
+            else if (errors.ValueKind == JsonValueKind.Array &&
+                     errors.GetArrayLength() > 0 &&
+                     errors[0].ValueKind == JsonValueKind.Object)
+            {
+                errorItem = errors[0];
+                hasErrorItem = true;
+            }
+
+            if (!hasErrorItem ||
+                !errorItem.TryGetProperty("message", out var message) ||
+                message.ValueKind != JsonValueKind.String)
+            {
+                return null;
+            }
+
+            string? errorMessage = message.GetString();
+
+            return string.IsNullOrWhiteSpace(errorMessage)
+                ? null
+                : errorMessage;
         }
 
         private class ZarinPalResponse

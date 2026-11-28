@@ -48,8 +48,17 @@ namespace Data.Configurations
             builder.Property(x => x.Amount)
                 .IsRequired();
 
+            // کنترل هم‌زمانی تغییرات
+            builder.Property(x => x.RowVersion)
+                .IsRowVersion()
+                .IsRequired();
+
             // Indexها
             builder.HasIndex(x => x.PaymentId);
+
+            builder.HasIndex(x => x.PaymentId)
+                .IsUnique()
+                .HasFilter("[Status] IN (0, 4)");
 
             builder.HasIndex(x => x.Status);
 

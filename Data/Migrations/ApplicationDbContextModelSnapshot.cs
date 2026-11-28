@@ -629,6 +629,9 @@ namespace Data.Migrations
                     b.Property<long>("Discount")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("IsInventoryDeducted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
@@ -667,7 +670,9 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[IsPaid] = 0 AND [Status] = 0");
 
                     b.ToTable("Orders");
                 });
@@ -840,6 +845,12 @@ namespace Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("datetime2");
 
@@ -850,13 +861,18 @@ namespace Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime?>("VerificationStartedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GatewayRequestId")
                         .IsUnique()
                         .HasFilter("[GatewayRequestId] IS NOT NULL");
 
-                    b.HasIndex("PaymentId");
+                    b.HasIndex("PaymentId")
+                        .IsUnique()
+                        .HasFilter("[Status] IN (0, 4)");
 
                     b.HasIndex("Status");
 

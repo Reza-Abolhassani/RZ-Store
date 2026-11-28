@@ -24,6 +24,11 @@ namespace Entities.Payments
         // زمان‌های تلاش
         public DateTime StartedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
+        // زمان شروع تأیید پرداخت
+        public DateTime? VerificationStartedAt { get; set; }
+
+        // کنترل هم‌زمانی تغییرات
+        public byte[] RowVersion { get; set; }
 
         public string? PaymentUrl { get; set; }
     }

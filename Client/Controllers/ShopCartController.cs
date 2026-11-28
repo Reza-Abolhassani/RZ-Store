@@ -87,6 +87,8 @@ namespace Client.Controllers
 
 
 
+
+
             var shopCart = await ShopCartRepo.AllTableNoTracking
                 .FirstOrDefaultAsync(x => x.UserId == user.Id);
 
@@ -562,6 +564,56 @@ namespace Client.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // بررسی وجود سفارش پرداخت‌نشده قبلی مشتری
+            var existingOrder = await _context.Set<Order>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                    x.UserId == user.Id &&
+                    x.IsPaid == false &&
+                    x.Status == OrderStatus.NotPayed);
+
+            if (existingOrder != null)
+            {
+                // استفاده مجدد از سفارش قبلی
+                var existingPaymentResult =
+                    await _paymentService.CreateOrderPaymentAsync(
+                        existingOrder.Id,
+                        user.Id,
+                        callbackUrl);
+
+                // بررسی آدرس پرداخت
+                if (!string.IsNullOrWhiteSpace(
+                        existingPaymentResult.PaymentUrl))
+                {
+                    if (Uri.TryCreate(
+                            existingPaymentResult.PaymentUrl,
+                            UriKind.Absolute,
+                            out var paymentUri) &&
+                        (paymentUri.Scheme == Uri.UriSchemeHttps ||
+                         paymentUri.Scheme == Uri.UriSchemeHttp))
+                    {
+                        return Redirect(paymentUri.ToString());
+                    }
+
+                    notification.AddErrorToastMessage(
+                        "آدرس درگاه پرداخت معتبر نیست.");
+                }
+                else if (existingPaymentResult.IsSuccess)
+                {
+                    notification.AddSuccessToastMessage(
+                        existingPaymentResult.Message ??
+                        "این سفارش قبلاً پرداخت شده است.");
+                }
+                else
+                {
+                    notification.AddErrorToastMessage(
+                        existingPaymentResult.Message ??
+                        "امکان ادامه پرداخت سفارش قبلی وجود ندارد.");
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
+
             // بررسی انتخاب آدرس توسط مشتری
             if (model.UserAddressId == Guid.Empty)
             {
@@ -723,10 +775,8 @@ namespace Client.Controllers
 
                 OrderItemRepo.Add(orderItem);
 
-                // کاهش موجودی محصول
-                product.Count -= cartItem.count;
-
-                ProductRepo.Update(product);
+            
+                
             }
 
             // به‌روزرسانی مبالغ نهایی سفارش
@@ -736,24 +786,40 @@ namespace Client.Controllers
 
             OrderRepo.Update(order);
 
-            // حذف اقلام سبد خرید پس از ثبت سفارش
-            foreach (var item in cartItems)
+            // ذخیره تغییرات دیتابیس و نهایی کردن تراکنش
+            try
             {
-                ShopCardItemRepo.Delete(item, saveNow: false);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
+            catch (DbUpdateException ex) when (
+                ex.GetBaseException() is Microsoft.Data.SqlClient.SqlException sqlEx &&
+                (sqlEx.Number == 2601 || sqlEx.Number == 2627) &&
+                sqlEx.Message.Contains(
+                    "IX_Orders_UserId",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                // بازگرداندن تغییرات درخواست ناموفق
+                await transaction.RollbackAsync();
 
-            // صفر کردن مبالغ سبد خرید
-            shopCart.TotalRawPrice = 0;
-            shopCart.TotalPrice = 0;
-            shopCart.DiscountPrice = 0;
+                // پاک کردن موجودیت‌های درخواست قبلی از ChangeTracker
+                _context.ChangeTracker.Clear();
 
-            ShopCartRepo.Update(shopCart, saveNow: false);
+                // پیدا کردن سفارش پرداخت‌نشده‌ای که درخواست هم‌زمان ساخته است
+                var concurrentOrder = await _context.Set<Order>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x =>
+                        x.UserId == user.Id &&
+                        x.IsPaid == false &&
+                        x.Status == OrderStatus.NotPayed);
 
-            // ذخیره تغییرات دیتابیس
-            await _context.SaveChangesAsync();
+                // اگر سفارش قبلی پیدا نشد، خطا را پنهان نکن
+                if (concurrentOrder == null)
+                    throw;
 
-            // نهایی کردن تراکنش دیتابیس
-            await transaction.CommitAsync();
+                // ادامه پرداخت با سفارش موجود
+                order = concurrentOrder;
+            }
 
             // ارسال درخواست پرداخت به درگاه
             var paymentResult = await _paymentService.CreateOrderPaymentAsync(

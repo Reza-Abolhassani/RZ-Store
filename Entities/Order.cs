@@ -17,6 +17,9 @@ namespace Entities
         public long Discount { get; set; }
         public long Total { get; set; }//Total=rawprice - discount + shippingprice
 
+        
+        public bool IsInventoryDeducted { get; set; } = false;// مشخص می‌کند موجودی محصولات این سفارش از انبار کسر شده است یا خیر.
+
         public OrderStatus Status { get; set; } = OrderStatus.NotPayed;
 
         public Guid UserId { get; set; }

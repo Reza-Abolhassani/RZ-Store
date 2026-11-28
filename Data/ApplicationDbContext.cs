@@ -41,6 +41,11 @@ namespace Data
             modelBuilder.AddRestrictDeleteBehaviorConvention();
             modelBuilder.AddSequentialGuidForIdConvention();
             modelBuilder.AddPluralizingTableNameConvention();
+
+            modelBuilder.Entity<Order>()
+                .HasIndex(x => x.UserId)
+                .IsUnique()
+                .HasFilter("[IsPaid] = 0 AND [Status] = 0");
         }
 
         public override int SaveChanges()
